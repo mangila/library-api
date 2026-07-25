@@ -1,0 +1,37 @@
+[tools]
+maven = "3"
+python = "3"
+node = "24"
+java = "graalvm-community-25"
+k6 = "latest"
+kustomize = "latest"
+minikube = "latest"
+
+[tasks.commit]
+description = "Add all, amend commit and force push"
+run = "git add . && git commit --amend --no-edit && git push --force-with-lease"
+
+[tasks.format]
+description = "Format pom.xml and Java code"
+dir = "./api"
+run = "mvn spotless:apply"
+
+[tasks.compile]
+description = "Compile"
+dir = "./api"
+run = "mvn clean test-compile"
+
+[tasks.test]
+description = "Test api"
+dir = "./api"
+run = "mise format && mvn clean verify"
+
+[tasks.pki]
+description = "Create Key pair for JWT signing"
+dir = "./api"
+run = """
+openssl genrsa -out rsaPrivateKey.pem 2048
+openssl rsa -pubout -in rsaPrivateKey.pem -out publicKey.pem
+openssl pkcs8 -topk8 -nocrypt -inform pem -in rsaPrivateKey.pem -outform pem -out privateKey.pem
+rm rsaPrivateKey.pem
+"""

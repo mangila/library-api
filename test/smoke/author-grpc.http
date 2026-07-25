@@ -1,0 +1,8 @@
+### Find author by ID
+GRPC localhost:8080/author.AuthorGrpc/FindById
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "id": "e011eaac-ca31-440a-ba0f-a20e6df9d011"
+}
