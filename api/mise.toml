@@ -1,0 +1,28 @@
+[tools]
+maven = "3"
+java = "graalvm-community-25"
+
+[tasks.start]
+description = "Start quarkus API in dev mode"
+run = "mise //api:compile && mvn quarkus:dev"
+
+[tasks.format]
+description = "Format pom.xml and Java code"
+run = "mvn spotless:apply"
+
+[tasks.compile]
+description = "Compile"
+run = "mvn clean test-compile"
+
+[tasks.test]
+description = "Test api"
+run = "mise format && mvn clean verify"
+
+[tasks.pki]
+description = "Create Key pair for JWT signing"
+run = """
+openssl genrsa -out rsaPrivateKey.pem 2048
+openssl rsa -pubout -in rsaPrivateKey.pem -out publicKey.pem
+openssl pkcs8 -topk8 -nocrypt -inform pem -in rsaPrivateKey.pem -outform pem -out privateKey.pem
+rm rsaPrivateKey.pem
+"""

@@ -1,0 +1,32 @@
+monorepo_root = true
+
+[monorepo]
+config_roots = ["api", "client", "test", "test/e2e", "test/performance", "k8s"]
+
+[settings]
+log_level = "debug"
+
+[tools]
+python = "3"
+node = "24"
+minikube = "latest"
+
+[tasks.commit]
+description = "Add all, amend commit and force push"
+run = "git add . && git commit --amend --no-edit && git push --force-with-lease"
+
+[tasks."k8s:start"]
+description = "Start Minikube cluster"
+run = "minikube start --memory=8192 --cpus=4"
+
+[tasks."k8s:stop"]
+description = "Stop local Minikube cluster"
+run = "minikube stop"
+
+[tasks."k8s:status"]
+description = "Check Minikube status"
+run = "minikube status"
+
+[tasks."k8s:delete"]
+description = "Delete Minikube cluster"
+run = "minikube delete"

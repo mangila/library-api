@@ -1,0 +1,9 @@
+[tasks.run]
+description = "Run performance test with K6"
+env = {BASE_URL = "http://localhost:8080"}
+run = "k6 run -e BASE_URL=$BASE_URL test.js"
+
+[tasks.generate]
+description = "generate ts client from openapi spec"
+env = {OPENAPI_URL = "http://localhost:8080/q/openapi"}
+run = "npx openapi-to-k6 $OPENAPI_URL library-api.ts"

@@ -1,0 +1,3 @@
+[tasks.run]
+description = "Run E2E tests with playwright"
+run = "npx playwright test"

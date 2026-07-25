@@ -1,0 +1,8 @@
+[tasks.start]
+description = "Start Astro client in dev mode"
+run = "npm run dev"
+
+[tasks.generate-api]
+description = "generate client from openapi spec"
+env = {OPENAPI_URL = "http://localhost:8080/q/openapi", OUTPUT_FOLDER = "./src/generated/library-api"}
+run = "rm -rf $OUTPUT_FOLDER && npx openapi-generator-cli generate --openapitools openapitools.json"
