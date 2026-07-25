@@ -1,0 +1,44 @@
+### Schedule download for file: ol_dump_authors_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/download/AUTHOR
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Schedule download for file: ol_dump_works_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/download/WORK
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Schedule download for file: ol_dump_editions_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/download/EDITION
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Schedule import for file: ol_dump_authors_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/import/AUTHOR
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Schedule import for file: ol_dump_works_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/import/WORK
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Schedule import for file: ol_dump_editions_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/import/EDITION
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Schedule process for file: ol_dump_authors_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/process/AUTHOR?limit=1024
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Schedule process for file: ol_dump_works_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/process/WORK?limit=1024
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### Schedule process for file: ol_dump_editions_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/process/EDITION?limit=1024
+Accept: application/json
+Authorization: Bearer {{auth_token}}

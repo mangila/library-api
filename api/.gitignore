@@ -1,0 +1,26 @@
+#Maven
+target
+
+# IntelliJ
+.idea
+*.ipr
+*.iml
+*.iws
+
+# macOS-specific files
+.DS_Store
+
+# Visual Studio Code
+.vscode
+.factorypath
+
+# Local environment
+.env
+
+# local
+*.gz
+*.tmp
+*.db
+*.pem
+!test-privateKey.pem
+!test-publicKey.pem

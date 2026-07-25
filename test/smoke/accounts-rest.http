@@ -1,0 +1,36 @@
+### POST login account
+POST http://localhost:8080/api/v1/accounts/login
+Content-Type: application/json
+
+{
+  "username": "admin12345",
+  "password": "admin12345"
+}
+
+> {%
+  client.global.set("auth_token", response.body.accessToken);
+  client.global.set("refresh_token", response.cookiesByName("refresh_token"))
+%}
+
+### GET account and jwt data
+GET http://localhost:8080/api/v1/accounts/me
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### POST refresh token
+POST http://localhost:8080/api/v1/accounts/refresh
+
+> {%
+    client.global.set("auth_token", response.body.accessToken);
+    client.global.set("refresh_token", response.cookiesByName("refresh_token"))
+%}
+
+### POST signup new account
+POST http://localhost:8080/api/v1/accounts/signup
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "mangila",
+  "password": "hello12345"
+}
