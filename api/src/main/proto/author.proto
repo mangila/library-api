@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.github.mangila.library.author.grpc.generated";
+option java_outer_classname = "AuthorGrpcProto";
+
+package author;
+
+service AuthorGrpc {
+  rpc FindById (FindByIdRequest) returns (AuthorRpcDto) {}
+}
+
+message FindByIdRequest {
+  string id = 1;
+}
+
+message AuthorRpcDto {
+  string id = 1;
+  string open_library_key = 2;
+  string name = 3;
+  string personal_name = 4;
+  repeated string alternate_names = 5;
+  repeated string uris = 6;
+  optional string bio = 7;
+  optional string location = 8;
+  optional string birth_date = 9;
+  optional string death_date = 10;
+  optional string wikipedia = 11;
+  repeated string links = 12;
+  repeated string books = 13;
+  repeated string works = 14;
+}

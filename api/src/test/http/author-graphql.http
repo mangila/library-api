@@ -1,0 +1,11 @@
+### Find author by ID
+POST http://localhost:8080/graphql
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "query": "query($id: String!) { findAuthorById(id: $id) { id name } }",
+  "variables": {
+    "id": "bca8f838-4f93-492c-ba4b-ec7d4ac496d3"
+  }
+}

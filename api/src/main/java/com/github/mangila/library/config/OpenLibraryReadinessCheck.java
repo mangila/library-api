@@ -1,0 +1,28 @@
+package com.github.mangila.library.config;
+
+import com.github.mangila.library.integration.openlibrary.OpenLibraryClient;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.health.HealthCheck;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.Readiness;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+
+@Readiness
+@ApplicationScoped
+public class OpenLibraryReadinessCheck implements HealthCheck {
+
+  private final OpenLibraryClient openLibraryClient;
+
+  public OpenLibraryReadinessCheck(@RestClient OpenLibraryClient openLibraryClient) {
+    this.openLibraryClient = openLibraryClient;
+  }
+
+  @Override
+  public HealthCheckResponse call() {
+    try (Response response = openLibraryClient.ping()) {
+      boolean ready = response.getStatusInfo().toEnum() == Response.Status.OK;
+      return HealthCheckResponse.named("openlibrary").status(ready).build();
+    }
+  }
+}
