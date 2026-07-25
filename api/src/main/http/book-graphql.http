@@ -1,0 +1,10 @@
+### Find book by ID
+POST http://localhost:8080/graphql
+Content-Type: application/json
+
+{
+  "query": "query($id: String!) { findBookById(id: $id) { id title category publicationDate description metadata } }",
+  "variables": {
+    "id": "8044ea85-a65d-451d-bbab-53364f51c263"
+  }
+}

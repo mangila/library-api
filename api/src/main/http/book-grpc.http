@@ -1,0 +1,7 @@
+### Find book by ID
+GRPC localhost:8080/book.BookGrpc/FindById
+Content-Type: application/json
+
+{
+  "id": "8044ea85-a65d-451d-bbab-53364f51c263"
+}

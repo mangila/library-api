@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.github.mangila.library.book.grpc";
+option java_outer_classname = "BookGrpcProto";
+
+package book;
+
+service BookGrpc {
+  rpc FindById (FindByIdRequest) returns (BookRpcDto) {}
+}
+
+message FindByIdRequest {
+  string id = 1;
+}
+
+message BookRpcDto {
+  string id = 1;
+  string author_id = 2;
+  string title = 3;
+  string category = 4;
+  string publication_date = 5;
+  string description = 6;
+  string metadata = 7;
+}
+
+

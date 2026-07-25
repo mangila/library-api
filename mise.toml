@@ -1,0 +1,11 @@
+[tools]
+maven = "3"
+python = "3"
+java = "graalvm-community-25"
+grpcurl = "latest"
+minikube = "latest"
+
+[tasks.format]
+description = "Format pom.xml and Java code"
+dir = "./api"
+run = "mvn spotless:apply"
