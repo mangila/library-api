@@ -1,0 +1,13 @@
+monorepo_root = true
+
+[monorepo]
+config_roots = ["api", "client", "test", "k8s"]
+
+[tools]
+python = "3"
+node = "24"
+minikube = "latest"
+
+[tasks.commit]
+description = "Add all, amend commit and force push"
+run = "git add . && git commit --amend --no-edit && git push --force-with-lease"

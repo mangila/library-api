@@ -1,0 +1,7 @@
+[tools]
+k6 = "latest"
+
+[tasks.e2e]
+description = "Run E2E tests with playwright"
+dir = "./e2e"
+run = "npx playwright test"
