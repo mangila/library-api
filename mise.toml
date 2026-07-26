@@ -1,8 +1,10 @@
 [tools]
 maven = "3"
 python = "3"
+node = "24"
 java = "graalvm-community-25"
 grpcurl = "latest"
+k6 = "latest"
 minikube = "latest"
 
 [tasks.format]

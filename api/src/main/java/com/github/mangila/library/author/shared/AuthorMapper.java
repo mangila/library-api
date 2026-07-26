@@ -24,8 +24,8 @@ public class AuthorMapper {
   }
 
   public Author toDomain(AuthorEntity authorEntity) {
-    final List<UUID> books = authorEntity.getBooks().stream().map(uuidFactory::parse).toList();
-    return new Author(authorEntity.getId(), authorEntity.getName(), new ArrayList<>(books));
+    final List<UUID> books = new ArrayList<>(authorEntity.getBooks());
+    return new Author(authorEntity.getId(), authorEntity.getName(), books);
   }
 
   public Author toDomain(CSVRecord csvRecord) {
@@ -39,8 +39,7 @@ public class AuthorMapper {
     final AuthorEntity entity = new AuthorEntity();
     entity.setId(author.id());
     entity.setName(author.name());
-    final List<String> books = author.books().stream().map(UUID::toString).toList();
-    entity.setBooks(books);
+    entity.setBooks(author.books());
     return entity;
   }
 

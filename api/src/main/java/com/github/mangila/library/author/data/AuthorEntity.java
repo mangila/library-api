@@ -28,7 +28,7 @@ public class AuthorEntity {
 
   @Column(name = "books")
   @JdbcTypeCode(SqlTypes.JSON)
-  private List<String> books = new ArrayList<>();
+  private List<UUID> books = new ArrayList<>();
 
   @Column(name = "created_at")
   @NotAudited
@@ -47,7 +47,7 @@ public class AuthorEntity {
     // do nothing for JPA
   }
 
-  public List<String> getBooks() {
+  public List<UUID> getBooks() {
     return books;
   }
 
@@ -71,7 +71,7 @@ public class AuthorEntity {
     return version;
   }
 
-  public void setBooks(List<String> books) {
+  public void setBooks(List<UUID> books) {
     this.books = books;
   }
 
