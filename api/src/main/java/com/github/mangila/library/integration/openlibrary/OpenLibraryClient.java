@@ -15,5 +15,5 @@ public interface OpenLibraryClient {
   @GET
   @Path("/data/{fileName}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  RestResponse<InputStream> downloadDump(@PathParam("fileName") String fileName);
+  RestResponse<InputStream> download(@PathParam("fileName") String fileName);
 }

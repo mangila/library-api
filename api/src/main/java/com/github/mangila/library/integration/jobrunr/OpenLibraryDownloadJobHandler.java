@@ -40,19 +40,17 @@ public class OpenLibraryDownloadJobHandler
     Path finalDestination = dataDir.resolve(fileName);
     Path downloadDestination = dataDir.resolve(fileName + ".tmp");
 
-    try (RestResponse<InputStream> response = openLibraryClient.downloadDump(fileName)) {
+    try (RestResponse<InputStream> response = openLibraryClient.download(fileName)) {
       ctx.logger().info(response.getStringHeaders().toString());
       Ensure.isTrue(response.getStatus() == 200, "Response status is not 200");
-      String contentLengthAsString =
-          response.getHeaderString(HttpHeaderNames.CONTENT_LENGTH.toString());
-      long contentLength = Long.parseLong(contentLengthAsString);
-      if (contentLength > 0) {
-        ctx.logger()
-            .info(
-                String.format(
-                    "File size for %s: %.2f MB", fileName, (double) contentLength / ONE_MB));
-      }
-
+      final String contentLengthAsString =
+          Ensure.notBlank(
+              response.getHeaderString(HttpHeaderNames.CONTENT_LENGTH.toString()),
+              "Content-Length header is missing");
+      final long contentLength = Long.parseLong(contentLengthAsString);
+      Ensure.positive(contentLength, "Content-Length header value is not positive");
+      ctx.logger()
+          .info("File size for %s: %.2f MB".formatted(fileName, (double) contentLength / ONE_MB));
       try (InputStream in = response.getEntity();
           OutputStream out =
               Files.newOutputStream(
@@ -70,7 +68,7 @@ public class OpenLibraryDownloadJobHandler
           transferred += read;
           if (transferred >= nextProgressUpdate) {
             double megabytes = (double) transferred / (ONE_MB);
-            ctx.logger().info(String.format("%.2f MB received", megabytes));
+            ctx.logger().info("%.2f MB received".formatted(megabytes));
             jobDashboardProgressBar.setProgress(transferred);
             nextProgressUpdate *= 2;
           }
@@ -80,16 +78,18 @@ public class OpenLibraryDownloadJobHandler
             finalDestination,
             StandardCopyOption.ATOMIC_MOVE,
             StandardCopyOption.REPLACE_EXISTING);
-        Log.infof("Successfully downloaded %s", finalDestination.toAbsolutePath());
+        jobDashboardProgressBar.setProgress(transferred);
+        Log.infof("Download OK: %s", finalDestination.toAbsolutePath());
       }
 
     } catch (IOException e) {
+      throw new UncheckedIOException("Download FAIL: %s".formatted(fileName), e);
+    } finally {
       try {
         Files.deleteIfExists(downloadDestination);
       } catch (IOException _) {
         // do nothing
       }
-      throw new UncheckedIOException("Failed to download dump file: " + fileName, e);
     }
   }
 }
