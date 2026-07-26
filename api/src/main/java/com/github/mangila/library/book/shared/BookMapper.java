@@ -5,7 +5,7 @@ import com.github.mangila.library.book.data.Category;
 import com.github.mangila.library.book.domain.Book;
 import com.github.mangila.library.book.graphql.BookGraphqlDto;
 import com.github.mangila.library.book.grpc.BookRpcDto;
-import com.github.mangila.library.book.web.BookRestDto;
+import com.github.mangila.library.book.rest.BookRestDto;
 import com.github.mangila.library.shared.JsonMapper;
 import com.github.mangila.library.shared.UuidFactory;
 import jakarta.enterprise.context.ApplicationScoped;

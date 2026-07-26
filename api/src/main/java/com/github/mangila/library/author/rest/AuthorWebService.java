@@ -1,4 +1,4 @@
-package com.github.mangila.library.author.web;
+package com.github.mangila.library.author.rest;
 
 import com.github.mangila.library.author.domain.AuthorService;
 import com.github.mangila.library.author.shared.AuthorMapper;

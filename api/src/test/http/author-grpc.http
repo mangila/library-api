@@ -5,10 +5,3 @@ Content-Type: application/json
 {
   "id": "bca8f838-4f93-492c-ba4b-ec7d4ac496d3"
 }
-> {%
-    // 🚀 This runs after the response returns
-    client.log("--- INCOMING GRPC HEADERS ---");
-
-    // Loop through and print all headers/trailers received
-    client.log(response.headers)
-%}

@@ -44,5 +44,8 @@ nb-configuration.xml
 # TLS Certificates
 .certs/
 
-# db
-library.db
+# local
+*.gz
+*.txt
+*.tmp
+*.db

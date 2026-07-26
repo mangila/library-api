@@ -3,7 +3,7 @@ package com.github.mangila.library.author.shared;
 import com.github.mangila.library.author.data.AuthorEntity;
 import com.github.mangila.library.author.domain.Author;
 import com.github.mangila.library.author.grpc.AuthorRpcDto;
-import com.github.mangila.library.author.web.AuthorWebDto;
+import com.github.mangila.library.author.rest.AuthorWebDto;
 import com.github.mangila.library.shared.JsonMapper;
 import com.github.mangila.library.shared.UuidFactory;
 import jakarta.enterprise.context.ApplicationScoped;

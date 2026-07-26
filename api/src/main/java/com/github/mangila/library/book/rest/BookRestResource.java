@@ -1,4 +1,4 @@
-package com.github.mangila.library.author.web;
+package com.github.mangila.library.book.rest;
 
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.ws.rs.GET;
@@ -9,21 +9,21 @@ import jakarta.ws.rs.core.MediaType;
 import org.hibernate.validator.constraints.UUID;
 import org.jboss.resteasy.reactive.RestResponse;
 
-@Path("api/v1/authors")
-public class AuthorRestResource {
+@Path("api/v1/books")
+public class BookRestResource {
 
-  private final AuthorWebService authorWebService;
+  private final BookRestService bookRestService;
 
-  public AuthorRestResource(AuthorWebService authorWebService) {
-    this.authorWebService = authorWebService;
+  public BookRestResource(BookRestService bookRestService) {
+    this.bookRestService = bookRestService;
   }
 
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   @GET
   @RunOnVirtualThread
-  public RestResponse<AuthorWebDto> findById(@PathParam("id") @UUID String id) {
-    final AuthorWebDto dto = authorWebService.findById(id);
+  public RestResponse<BookRestDto> findById(@PathParam("id") @UUID String id) {
+    final BookRestDto dto = bookRestService.findById(id);
     return RestResponse.ok(dto);
   }
 }

@@ -1,4 +1,4 @@
-package com.github.mangila.library.author.web;
+package com.github.mangila.library.author.rest;
 
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.inject.Inject;

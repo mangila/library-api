@@ -1,4 +1,4 @@
-package com.github.mangila.library.book.web;
+package com.github.mangila.library.book.rest;
 
 import com.github.mangila.library.book.data.Category;
 import java.time.LocalDate;
