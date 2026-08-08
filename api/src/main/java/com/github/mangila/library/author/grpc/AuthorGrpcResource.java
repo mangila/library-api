@@ -1,5 +1,8 @@
 package com.github.mangila.library.author.grpc;
 
+import com.github.mangila.library.author.grpc.generated.AuthorGrpc;
+import com.github.mangila.library.author.grpc.generated.AuthorRpcDto;
+import com.github.mangila.library.author.grpc.generated.FindByIdRequest;
 import com.github.mangila.library.shared.GrpcProblemUtil;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.RunOnVirtualThread;

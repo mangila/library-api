@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "com.github.mangila.library.book.grpc";
+option java_package = "com.github.mangila.library.book.grpc.generated";
 option java_outer_classname = "BookGrpcProto";
 
 package book;

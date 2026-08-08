@@ -2,43 +2,52 @@ package com.github.mangila.library.integration.jobrunr;
 
 import static org.jobrunr.scheduling.JobBuilder.aJob;
 
-import com.github.mangila.library.config.OpenLibraryConfig;
-import io.quarkus.logging.Log;
-import io.quarkus.runtime.StartupEvent;
+import com.github.mangila.library.integration.jobrunr.jobs.DatabaseBackupJobRequest;
+import com.github.mangila.library.integration.jobrunr.jobs.OpenLibraryDownloadJobRequest;
+import com.github.mangila.library.integration.jobrunr.jobs.OpenLibraryEtlJobRequest;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
 import java.time.Duration;
+import org.jobrunr.jobs.JobId;
 import org.jobrunr.scheduling.JobRequestScheduler;
+import org.jobrunr.scheduling.RecurringJobBuilder;
+import org.jobrunr.scheduling.cron.Cron;
 
 @ApplicationScoped
 public class JobRunrScheduler {
 
-  private final OpenLibraryConfig openLibraryConfig;
   private final JobRequestScheduler jobRequestScheduler;
 
-  public JobRunrScheduler(
-      OpenLibraryConfig openLibraryConfig, JobRequestScheduler jobRequestScheduler) {
-    this.openLibraryConfig = openLibraryConfig;
+  public JobRunrScheduler(JobRequestScheduler jobRequestScheduler) {
     this.jobRequestScheduler = jobRequestScheduler;
   }
 
-  public void scheduleAtStartUp(@Observes StartupEvent event) {
-    if (openLibraryConfig.downloadEnabled()) {
-      openLibraryConfig.downloadFileNames().stream()
-          .map(OpenLibraryDownloadJobRequest::new)
-          .forEach(
-              jobRequest -> {
-                final String fileName = jobRequest.fileName();
-                final var _ =
-                    jobRequestScheduler.create(
-                        aJob()
-                            .scheduleIn(Duration.ofSeconds(1))
-                            .withName("Download: %s".formatted(fileName))
-                            .withAmountOfRetries(10)
-                            .withLabels("openlibrary", "download")
-                            .withJobRequest(jobRequest));
-                Log.infof("Scheduled download: %s", fileName);
-              });
-    }
+  public String databaseBackupRecurringJob() {
+    return jobRequestScheduler.createRecurrently(
+        RecurringJobBuilder.aRecurringJob()
+            .withCron(Cron.every5minutes())
+            .withName("Database Backup")
+            .withAmountOfRetries(10)
+            .withLabels("database", "backup")
+            .withJobRequest(new DatabaseBackupJobRequest()));
+  }
+
+  public JobId openLibraryDownloadJob(String fileName) {
+    return jobRequestScheduler.create(
+        aJob()
+            .scheduleIn(Duration.ofSeconds(1))
+            .withName("Download: %s".formatted(fileName))
+            .withAmountOfRetries(10)
+            .withLabels("openlibrary", "download")
+            .withJobRequest(new OpenLibraryDownloadJobRequest(fileName)));
+  }
+
+  public JobId openLibraryEtlJob(String fileName) {
+    return jobRequestScheduler.create(
+        aJob()
+            .scheduleIn(Duration.ofSeconds(1))
+            .withName("ETL: %s".formatted(fileName))
+            .withAmountOfRetries(10)
+            .withLabels("openlibrary", "etl")
+            .withJobRequest(new OpenLibraryEtlJobRequest(fileName)));
   }
 }

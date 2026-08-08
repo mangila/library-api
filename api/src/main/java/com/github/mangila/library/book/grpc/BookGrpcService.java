@@ -1,6 +1,7 @@
 package com.github.mangila.library.book.grpc;
 
 import com.github.mangila.library.book.domain.BookService;
+import com.github.mangila.library.book.grpc.generated.BookRpcDto;
 import com.github.mangila.library.book.shared.BookMapper;
 import com.github.mangila.library.shared.GrpcProblemUtil;
 import com.github.mangila.library.shared.UuidFactory;

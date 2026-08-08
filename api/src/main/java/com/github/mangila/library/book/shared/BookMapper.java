@@ -1,28 +1,19 @@
 package com.github.mangila.library.book.shared;
 
 import com.github.mangila.library.book.data.BookEntity;
-import com.github.mangila.library.book.data.Category;
 import com.github.mangila.library.book.domain.Book;
 import com.github.mangila.library.book.graphql.BookGraphqlDto;
-import com.github.mangila.library.book.grpc.BookRpcDto;
+import com.github.mangila.library.book.grpc.generated.BookRpcDto;
 import com.github.mangila.library.book.rest.BookRestDto;
 import com.github.mangila.library.shared.JsonMapper;
-import com.github.mangila.library.shared.UuidFactory;
 import jakarta.enterprise.context.ApplicationScoped;
-import java.time.LocalDate;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
-import org.apache.commons.csv.CSVRecord;
 
 @ApplicationScoped
 public class BookMapper {
 
-  private final UuidFactory uuidFactory;
   private final JsonMapper jsonMapper;
 
-  public BookMapper(UuidFactory uuidFactory, JsonMapper jsonMapper) {
-    this.uuidFactory = uuidFactory;
+  public BookMapper(JsonMapper jsonMapper) {
     this.jsonMapper = jsonMapper;
   }
 
@@ -35,16 +26,6 @@ public class BookMapper {
         bookEntity.getPublicationDate(),
         bookEntity.getDescription(),
         bookEntity.getMetadata());
-  }
-
-  public Book toDomain(CSVRecord csvRecord, UUID authorId) {
-    final UUID id = uuidFactory.parse(csvRecord.get("id"));
-    final String title = csvRecord.get("title");
-    final Category category = Category.valueOf(csvRecord.get("category").toUpperCase(Locale.ROOT));
-    final LocalDate publicationDdate = LocalDate.parse(csvRecord.get("publicationDate"));
-    final String description = csvRecord.get("description");
-    final Map<String, Object> metadata = jsonMapper.fromJsonObject(csvRecord.get("metadata"));
-    return new Book(id, authorId, title, category, publicationDdate, description, metadata);
   }
 
   public BookEntity toEntity(Book book) {

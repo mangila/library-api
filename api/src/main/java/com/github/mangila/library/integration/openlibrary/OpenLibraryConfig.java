@@ -1,4 +1,4 @@
-package com.github.mangila.library.config;
+package com.github.mangila.library.integration.openlibrary;
 
 import io.smallrye.config.ConfigMapping;
 import java.util.List;
@@ -9,4 +9,8 @@ public interface OpenLibraryConfig {
   boolean downloadEnabled();
 
   List<String> downloadFileNames();
+
+  boolean etlEnabled();
+
+  List<String> etlFileNames();
 }

@@ -1,6 +1,7 @@
 package com.github.mangila.library.author.grpc;
 
 import com.github.mangila.library.author.domain.AuthorService;
+import com.github.mangila.library.author.grpc.generated.AuthorRpcDto;
 import com.github.mangila.library.author.shared.AuthorMapper;
 import com.github.mangila.library.shared.GrpcProblemUtil;
 import com.github.mangila.library.shared.UuidFactory;

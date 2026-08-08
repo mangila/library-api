@@ -11,3 +11,13 @@ minikube = "latest"
 description = "Format pom.xml and Java code"
 dir = "./api"
 run = "mvn spotless:apply"
+
+[tasks.spotbugs]
+description = "Spotbugs api"
+dir = "./api"
+run = "mvn spotbugs:check"
+
+[tasks.test]
+description = "Test api"
+dir = "./api"
+run = "mise format && mvn clean verify && mise spotbugs"

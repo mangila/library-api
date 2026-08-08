@@ -8,6 +8,10 @@ public class HttpProblemException extends HttpProblem {
 
   private static final URI DEFAULT_TYPE = URI.create("about:blank");
 
+  public static HttpProblemException badRequest(String message) {
+    return new HttpProblemException(message, Response.Status.BAD_REQUEST);
+  }
+
   public static HttpProblemException notFound(String message) {
     return new HttpProblemException(message, Response.Status.NOT_FOUND);
   }

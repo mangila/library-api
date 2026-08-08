@@ -2,11 +2,11 @@ package com.github.mangila.library;
 
 import static io.restassured.RestAssured.given;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.Test;
 
-@QuarkusTest
-class ApplicationSmokeIT {
+@QuarkusIntegrationTest
+class ApplicationSmokeArtifactIT {
 
   @Test
   void smoke() {
