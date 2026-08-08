@@ -30,8 +30,8 @@ public class OpenLibraryDownloadIntegration {
   }
 
   /**
-   * Downloads a dump file from OpenLibrary. Callbacks progress on every 1% downloaded. Creates a
-   * temporary file and renames it to the destination file when download is complete.
+   * Downloads a dump file from OpenLibrary. Callbacks progress on every ratio% downloaded. Creates
+   * a temporary file and renames it to the destination file when download is complete.
    *
    * @param destination - the destination file
    * @param progress - progress callback
@@ -65,7 +65,7 @@ public class OpenLibraryDownloadIntegration {
           transferred += read;
           if (transferred >= nextProgressUpdate) {
             progress.accept(transferred, contentLength);
-            nextProgressUpdate = getNextProgressUpdate(transferred, contentLength);
+            nextProgressUpdate = getNextProgressUpdate(transferred, contentLength, 0.01);
           }
         }
         bos.flush();
@@ -101,8 +101,8 @@ public class OpenLibraryDownloadIntegration {
     }
   }
 
-  private long getNextProgressUpdate(long transferred, long contentLength) {
-    final long onePercent = Math.max(1L, contentLength / 100);
-    return transferred + onePercent;
+  private long getNextProgressUpdate(long transferred, long contentLength, double ratio) {
+    final long increment = Math.max(1L, (long) (contentLength * ratio));
+    return transferred + increment;
   }
 }
