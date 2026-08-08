@@ -30,7 +30,8 @@ public class OpenLibraryDownloadIntegration {
   }
 
   /**
-   * downloads a file from OpenLibrary and run the progress callback on every MB exponential until 32 MB
+   * downloads a file from OpenLibrary and run the progress callback on every MB exponential until
+   * 32 MB
    *
    * @param destination - the destination file
    * @param progress - progress callback
