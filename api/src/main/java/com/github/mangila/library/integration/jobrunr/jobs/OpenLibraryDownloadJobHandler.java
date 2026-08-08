@@ -1,10 +1,9 @@
 package com.github.mangila.library.integration.jobrunr.jobs;
 
-import static org.apache.commons.io.FileUtils.ONE_MB;
-
 import com.github.mangila.library.integration.openlibrary.OpenLibraryDownloadIntegration;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.nio.file.Path;
+import org.apache.commons.io.FileUtils;
 import org.jobrunr.jobs.context.JobContext;
 import org.jobrunr.jobs.context.JobDashboardProgressBar;
 import org.jobrunr.jobs.lambdas.JobRequestHandler;
@@ -35,11 +34,11 @@ public class OpenLibraryDownloadJobHandler
               if (transferred == 0) {
                 this.jobDashboardProgressBar = ctx.progressBar(total);
                 ctx.logger()
-                    .info("File size: %s: %.2f MB".formatted(fileName, (double) total / ONE_MB));
+                    .info("File size: %s".formatted(FileUtils.byteCountToDisplaySize(total)));
               }
-              double megabytes = (double) transferred / (ONE_MB);
               jobDashboardProgressBar.setProgress(transferred);
-              ctx.logger().info("%.2f MB downloaded".formatted(megabytes));
+              ctx.logger()
+                  .info("Downloaded: %s".formatted(FileUtils.byteCountToDisplaySize(transferred)));
             });
     ctx.logger().info("File downloaded to %s".formatted(path));
   }
