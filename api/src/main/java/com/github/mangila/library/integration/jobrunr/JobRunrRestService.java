@@ -4,6 +4,7 @@ import com.github.mangila.library.integration.openlibrary.OpenLibraryConfig;
 import com.github.mangila.library.shared.HttpProblemException;
 import io.github.mangila.ensure4j.Ensure;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.jobrunr.jobs.JobId;
 
 @ApplicationScoped
 public class JobRunrRestService {
@@ -18,7 +19,8 @@ public class JobRunrRestService {
   }
 
   public JobCreatedDto scheduleBackup() {
-    return new JobCreatedDto(jobRunrScheduler.databaseBackupJob().asUUID());
+    final JobId jobId = jobRunrScheduler.databaseBackupJob();
+    return JobCreatedDto.from(jobId);
   }
 
   public JobCreatedDto scheduleDownload(String fileName) {
@@ -28,6 +30,7 @@ public class JobRunrRestService {
     final boolean anyMatch =
         openLibraryConfig.downloadFileNames().stream().anyMatch(fileName::equals);
     Ensure.isTrue(anyMatch, () -> HttpProblemException.badRequest("File name not found"));
-    return new JobCreatedDto(jobRunrScheduler.openLibraryDownloadJob(fileName).asUUID());
+    final JobId jobId = jobRunrScheduler.openLibraryDownloadJob(fileName);
+    return JobCreatedDto.from(jobId);
   }
 }
