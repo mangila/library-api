@@ -17,6 +17,10 @@ public class JobRunrRestService {
     this.jobRunrScheduler = jobRunrScheduler;
   }
 
+  public JobCreatedDto scheduleBackup() {
+    return new JobCreatedDto(jobRunrScheduler.databaseBackupJob().asUUID());
+  }
+
   public JobCreatedDto scheduleDownload(String fileName) {
     Ensure.isTrue(
         openLibraryConfig.downloadEnabled(),

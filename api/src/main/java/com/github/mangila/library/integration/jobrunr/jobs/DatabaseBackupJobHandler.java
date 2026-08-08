@@ -9,9 +9,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jobrunr.jobs.context.JobContext;
 import org.jobrunr.jobs.lambdas.JobRequestHandler;
+import org.jobrunr.server.runner.ThreadLocalJobContext;
 
+/**
+ * This is because of SqlLite sandbox, this is needed to get writes on the filesystem <a
+ * href="https://quarkus.io/blog/sqlite4j-pure-java-sqlite/">Quarkus SQLite Blog post</a>
+ */
 @ApplicationScoped
 public class DatabaseBackupJobHandler implements JobRequestHandler<DatabaseBackupJobRequest> {
 
@@ -45,10 +52,16 @@ public class DatabaseBackupJobHandler implements JobRequestHandler<DatabaseBacku
   @SuppressWarnings("java:S2077")
   @Override
   public void run(DatabaseBackupJobRequest jobRequest) throws Exception {
+    final JobContext ctx = ThreadLocalJobContext.getJobContext();
     final Path dbFile = resolveDatabasePath(this.jdbcUrl);
     Ensure.notNull(dbFile);
-    final Path dbFileName = Ensure.notNull(dbFile.getFileName());
-    final Path backupFile = dbFile.resolveSibling(dbFileName + "-backup.tmp");
+    final Path backupFile = dbFile.resolveSibling("backup.db");
+    final long fileSize = Files.size(dbFile);
+    ctx.logger()
+        .info(
+            "Database file: %s - size: %s"
+                .formatted(dbFile, FileUtils.byteCountToDisplaySize(fileSize)));
+    ctx.logger().info("Database backup file: %s".formatted(backupFile));
     try (var conn = dataSource.getConnection();
         var stmt = conn.createStatement()) {
       // language=sqlite

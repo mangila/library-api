@@ -6,3 +6,6 @@ GET http://localhost:8080/api/v1/jobrunr/download/ol_dump_works_latest.txt.gz
 
 ### Schedule download for file: ol_dump_editions_latest.txt.gz
 GET http://localhost:8080/api/v1/jobrunr/download/ol_dump_editions_latest.txt.gz
+
+### Schedule database backup
+GET http://localhost:8080/api/v1/jobrunr/backup

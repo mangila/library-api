@@ -21,6 +21,16 @@ public class JobRunrScheduler {
     this.jobRequestScheduler = jobRequestScheduler;
   }
 
+  public JobId databaseBackupJob() {
+    return jobRequestScheduler.create(
+        aJob()
+            .scheduleIn(Duration.ofSeconds(1))
+            .withName("Database Backup")
+            .withAmountOfRetries(10)
+            .withLabels("database", "backup")
+            .withJobRequest(new DatabaseBackupJobRequest()));
+  }
+
   public String databaseBackupRecurringJob() {
     return jobRequestScheduler.createRecurrently(
         RecurringJobBuilder.aRecurringJob()

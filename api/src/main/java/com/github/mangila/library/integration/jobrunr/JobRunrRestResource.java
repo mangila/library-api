@@ -17,11 +17,20 @@ public class JobRunrRestResource {
     this.jobRunrRestService = jobRunrRestService;
   }
 
+  @Path("/backup")
+  @Produces(MediaType.APPLICATION_JSON)
+  @GET
+  @RunOnVirtualThread
+  public RestResponse<JobCreatedDto> scheduleBackup() {
+    JobCreatedDto jobCreatedDto = jobRunrRestService.scheduleBackup();
+    return RestResponse.ok(jobCreatedDto);
+  }
+
   @Path("/download/{fileName}")
   @Produces(MediaType.APPLICATION_JSON)
   @GET
   @RunOnVirtualThread
-  public RestResponse<JobCreatedDto> findById(@PathParam("fileName") String fileName) {
+  public RestResponse<JobCreatedDto> scheduleDownload(@PathParam("fileName") String fileName) {
     JobCreatedDto jobCreatedDto = jobRunrRestService.scheduleDownload(fileName);
     return RestResponse.ok(jobCreatedDto);
   }
