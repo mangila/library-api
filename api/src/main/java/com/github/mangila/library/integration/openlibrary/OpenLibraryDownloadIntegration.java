@@ -30,8 +30,8 @@ public class OpenLibraryDownloadIntegration {
   }
 
   /**
-   * downloads a file from OpenLibrary and run the progress callback on every MB exponential until
-   * 32 MB
+   * Downloads a dump file from OpenLibrary. Callbacks progress on every 1% downloaded. Creates a
+   * temporary file and renames it to the destination file when download is complete.
    *
    * @param destination - the destination file
    * @param progress - progress callback
@@ -46,7 +46,8 @@ public class OpenLibraryDownloadIntegration {
     final long contentLength = getContentLength(fileNameAsString);
     progress.accept(0L, contentLength);
     try (RestResponse<InputStream> response = openLibraryClient.download(fileNameAsString)) {
-      Ensure.isTrue(response.getStatus() == 200, "Response status is not 200");
+      Ensure.isTrue(
+          response.getStatusInfo().toEnum() == Response.Status.OK, "Response status must be OK");
       try (InputStream in = response.getEntity();
           OutputStream out =
               Files.newOutputStream(
@@ -64,9 +65,7 @@ public class OpenLibraryDownloadIntegration {
           transferred += read;
           if (transferred >= nextProgressUpdate) {
             progress.accept(transferred, contentLength);
-            long nextExponential = transferred * 2;
-            long capped = transferred + (ONE_MB * 32);
-            nextProgressUpdate = Math.min(nextExponential, capped);
+            nextProgressUpdate = getNextProgressUpdate(transferred, contentLength);
           }
         }
         bos.flush();
@@ -91,12 +90,19 @@ public class OpenLibraryDownloadIntegration {
   private long getContentLength(String fileName) {
     try (Response response = openLibraryClient.checkDownload(fileName)) {
       Log.info(response.getHeaders());
-      Ensure.isTrue(response.getStatus() == 200, "Response status is not 200");
+      Ensure.isTrue(
+          response.getStatusInfo().toEnum() == Response.Status.OK, "Response status must be OK");
       final String length = response.getHeaderString(HttpHeaderNames.CONTENT_LENGTH.toString());
-      Ensure.notBlank(length, "Content-Length header is missing");
+      Ensure.notBlank(length, "%s must be present".formatted(HttpHeaderNames.CONTENT_LENGTH));
       final long contentLength = Long.parseLong(length);
-      Ensure.positive(contentLength, "Content-Length header value is not positive");
+      Ensure.positive(
+          contentLength, "%s value must be positive".formatted(HttpHeaderNames.CONTENT_LENGTH));
       return contentLength;
     }
+  }
+
+  private long getNextProgressUpdate(long transferred, long contentLength) {
+    final long onePercent = Math.max(1L, contentLength / 100);
+    return transferred + onePercent;
   }
 }

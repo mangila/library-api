@@ -20,7 +20,7 @@ public class OpenLibraryHealthCheck implements HealthCheck {
   @Override
   public HealthCheckResponse call() {
     try (Response response = openLibraryClient.ping()) {
-      boolean ready = response.getStatus() == 200;
+      boolean ready = response.getStatusInfo().toEnum() == Response.Status.OK;
       return HealthCheckResponse.named("openlibrary").status(ready).build();
     }
   }
