@@ -3,6 +3,7 @@ package com.github.mangila.library.integration.jobrunr.jobs;
 import com.github.mangila.library.integration.openlibrary.OpenLibraryDownloadIntegration;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.nio.file.Path;
+import java.time.Duration;
 import org.apache.commons.io.FileUtils;
 import org.jobrunr.jobs.context.JobContext;
 import org.jobrunr.jobs.context.JobDashboardProgressBar;
@@ -25,8 +26,9 @@ public class OpenLibraryDownloadJobHandler
   public void run(OpenLibraryDownloadJobRequest jobRequest) {
     final String fileName = jobRequest.fileName();
     final JobContext ctx = ThreadLocalJobContext.getJobContext();
-    Path dataDir = Path.of("data");
-    Path destination = dataDir.resolve(fileName);
+    final Path dataDir = Path.of("data");
+    final Path destination = dataDir.resolve(fileName);
+    final long startTime = System.nanoTime();
     final Path path =
         openLibraryDownloadIntegration.downloadToFileSystem(
             destination,
@@ -35,11 +37,19 @@ public class OpenLibraryDownloadJobHandler
                 this.jobDashboardProgressBar = ctx.progressBar(total);
                 ctx.logger()
                     .info("File size: %s".formatted(FileUtils.byteCountToDisplaySize(total)));
+              } else {
+                jobDashboardProgressBar.setProgress(transferred);
+                long elapsedSeconds = Duration.ofNanos(System.nanoTime() - startTime).toSeconds();
+                long bytesPerSecond = transferred / elapsedSeconds;
+                ctx.logger()
+                    .info(
+                        "Downloaded: %s / %s (%s)"
+                            .formatted(
+                                FileUtils.byteCountToDisplaySize(transferred),
+                                FileUtils.byteCountToDisplaySize(total),
+                                FileUtils.byteCountToDisplaySize(bytesPerSecond) + "/s"));
               }
-              jobDashboardProgressBar.setProgress(transferred);
-              ctx.logger()
-                  .info("Downloaded: %s".formatted(FileUtils.byteCountToDisplaySize(transferred)));
             });
-    ctx.logger().info("File downloaded to %s".formatted(path));
+    ctx.logger().info("File downloaded to %s".formatted(path.toAbsolutePath()));
   }
 }

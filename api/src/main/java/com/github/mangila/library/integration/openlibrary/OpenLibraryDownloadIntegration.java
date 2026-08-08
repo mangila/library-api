@@ -41,11 +41,10 @@ public class OpenLibraryDownloadIntegration {
     Ensure.notNull(destination);
     Ensure.notNull(progress);
     final Path fileName = Ensure.notNull(destination.getFileName());
-    final String fileNameAsString = fileName.toString();
     final Path downloadDestination = destination.resolveSibling(fileName + ".tmp");
-    final long contentLength = getContentLength(fileNameAsString);
+    final long contentLength = getContentLength(fileName.toString());
     progress.accept(0L, contentLength);
-    try (RestResponse<InputStream> response = openLibraryClient.download(fileNameAsString)) {
+    try (RestResponse<InputStream> response = openLibraryClient.download(fileName.toString())) {
       Ensure.isTrue(
           response.getStatusInfo().toEnum() == Response.Status.OK, "Response status must be OK");
       try (InputStream in = response.getEntity();
