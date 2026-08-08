@@ -29,6 +29,13 @@ public class OpenLibraryDownloadIntegration {
     this.openLibraryClient = openLibraryClient;
   }
 
+  /**
+   * downloads a file from OpenLibrary and run the progress callback on every MB exponential until 32 MB
+   *
+   * @param destination - the destination file
+   * @param progress - progress callback
+   * @return the downloaded file on filesystem
+   */
   public Path downloadToFileSystem(Path destination, BiConsumer<Long, Long> progress) {
     Ensure.notNull(destination);
     Ensure.notNull(progress);
@@ -56,7 +63,9 @@ public class OpenLibraryDownloadIntegration {
           transferred += read;
           if (transferred >= nextProgressUpdate) {
             progress.accept(transferred, contentLength);
-            nextProgressUpdate *= 2;
+            long nextExponential = transferred * 2;
+            long capped = transferred + (ONE_MB * 32);
+            nextProgressUpdate = Math.min(nextExponential, capped);
           }
         }
         bos.flush();
