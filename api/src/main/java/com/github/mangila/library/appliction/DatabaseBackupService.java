@@ -1,6 +1,7 @@
 package com.github.mangila.library.appliction;
 
 import io.agroal.api.AgroalDataSource;
+import io.github.mangila.ensure4j.Ensure;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -23,18 +24,15 @@ public class DatabaseBackupService {
     this.dataSource = dataSource;
   }
 
-  public Path dbFile() {
-    return databaseFileHandler.getDbFile();
-  }
-
   /**
    * This is because of SqlLite sandbox, this is needed to get writes on the filesystem <a
    * href="https://quarkus.io/blog/sqlite4j-pure-java-sqlite/">Quarkus SQLite Blog post</a>
    */
   @SuppressWarnings("java:S2077")
-  public void execute() {
+  public void createBackup() {
     final Path dbFile = databaseFileHandler.getDbFile();
-    final Path backupFile = databaseFileHandler.getBackupFile();
+    final Path fileName = Ensure.notNull(dbFile.getFileName());
+    final Path backupFile = dbFile.resolveSibling(fileName + ".bak");
     try (final Connection connection = dataSource.getConnection();
         final Statement statement = connection.createStatement()) {
       // language=sqlite
@@ -54,11 +52,11 @@ public class DatabaseBackupService {
     }
   }
 
+  public Path dbFile() {
+    return databaseFileHandler.getDbFile();
+  }
+
   public long size() {
-    try {
-      return databaseFileHandler.getFileSize();
-    } catch (IOException e) {
-      throw new UncheckedIOException("Failed to get database file size", e);
-    }
+    return databaseFileHandler.getFileSize();
   }
 }

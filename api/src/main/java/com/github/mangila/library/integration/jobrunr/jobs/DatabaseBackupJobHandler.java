@@ -19,14 +19,14 @@ public class DatabaseBackupJobHandler implements JobRequestHandler<DatabaseBacku
 
   @Override
   public void run(DatabaseBackupJobRequest jobRequest) {
-    final JobContext ctx = ThreadLocalJobContext.getJobContext();
+    final JobContext jobContext = ThreadLocalJobContext.getJobContext();
     final Path dbFile = databaseBackupService.dbFile();
     final long fileSize = databaseBackupService.size();
-    ctx.logger()
+    jobContext
+        .logger()
         .info(
             "Database file: %s - Size: %s"
                 .formatted(dbFile, FileUtils.byteCountToDisplaySize(fileSize)));
-    databaseBackupService.execute();
-    ctx.logger().info("Database backup completed");
+    databaseBackupService.createBackup();
   }
 }

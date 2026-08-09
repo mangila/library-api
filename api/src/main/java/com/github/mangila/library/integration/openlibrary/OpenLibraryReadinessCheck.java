@@ -9,11 +9,11 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @Readiness
 @ApplicationScoped
-public class OpenLibraryHealthCheck implements HealthCheck {
+public class OpenLibraryReadinessCheck implements HealthCheck {
 
   private final OpenLibraryClient openLibraryClient;
 
-  public OpenLibraryHealthCheck(@RestClient OpenLibraryClient openLibraryClient) {
+  public OpenLibraryReadinessCheck(@RestClient OpenLibraryClient openLibraryClient) {
     this.openLibraryClient = openLibraryClient;
   }
 

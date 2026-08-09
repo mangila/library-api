@@ -1,11 +1,11 @@
 package com.github.mangila.library.appliction;
 
-import io.github.mangila.ensure4j.Ensure;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.Startup;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,30 +19,27 @@ public class DatabaseFileHandler {
   private static final String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
 
   private Path dbFile;
-  private Path backupFile;
   private final String jdbcUrl;
 
   public DatabaseFileHandler(@ConfigProperty(name = "quarkus.datasource.jdbc.url") String jdbcUrl) {
     this.jdbcUrl = jdbcUrl;
   }
 
-  public Path getBackupFile() {
-    return backupFile;
-  }
-
   public Path getDbFile() {
     return dbFile;
   }
 
-  public long getFileSize() throws IOException {
-    return Files.size(dbFile);
+  public long getFileSize() {
+    try {
+      return Files.size(dbFile);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 
   @PostConstruct
-  public void init() throws IOException {
+  public void init() {
     this.dbFile = resolveDatabasePath(jdbcUrl);
-    final Path fileName = Ensure.notNull(dbFile.getFileName());
-    this.backupFile = dbFile.resolveSibling(fileName + ".bak");
     Log.infof(
         "%sDatabase file: %s%sSize: %s",
         System.lineSeparator(),

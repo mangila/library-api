@@ -35,9 +35,8 @@ public class OpenLibraryDownloadIntegration {
    *
    * @param destination - the destination file
    * @param progress - progress callback
-   * @return the downloaded file on filesystem
    */
-  public Path downloadToFileSystem(Path destination, BiConsumer<Long, Long> progress) {
+  public void downloadToFileSystem(Path destination, BiConsumer<Long, Long> progress) {
     Ensure.notNull(destination);
     Ensure.notNull(progress);
     final Path fileName = Ensure.notNull(destination.getFileName());
@@ -74,7 +73,6 @@ public class OpenLibraryDownloadIntegration {
             StandardCopyOption.ATOMIC_MOVE,
             StandardCopyOption.REPLACE_EXISTING);
       }
-      return destination;
     } catch (IOException e) {
       throw new UncheckedIOException("Download FAIL: %s".formatted(fileName), e);
     } finally {

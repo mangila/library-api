@@ -3,10 +3,11 @@ package com.github.mangila.library.integration.jobrunr;
 import static org.jobrunr.scheduling.JobBuilder.aJob;
 
 import com.github.mangila.library.integration.jobrunr.jobs.DatabaseBackupJobRequest;
+import com.github.mangila.library.integration.jobrunr.jobs.OpenLibraryAuthorEtlJobRequest;
 import com.github.mangila.library.integration.jobrunr.jobs.OpenLibraryDownloadJobRequest;
-import com.github.mangila.library.integration.jobrunr.jobs.OpenLibraryEtlJobRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.Duration;
+import java.util.UUID;
 import org.jobrunr.jobs.JobId;
 import org.jobrunr.scheduling.JobRequestScheduler;
 import org.jobrunr.scheduling.RecurringJobBuilder;
@@ -41,6 +42,15 @@ public class JobRunrScheduler {
             .withJobRequest(new DatabaseBackupJobRequest()));
   }
 
+  public JobId etlJob(String fileName) {
+    return switch (fileName) {
+      case "ol_dump_authors_latest.txt.gz" -> openLibraryAuthorEtlJob(fileName);
+      case "ol_dump_works_latest.txt.gz" -> new JobId(new UUID(0, 0));
+      case "ol_dump_editions_latest.txt.gz" -> new JobId(new UUID(0, 0));
+      default -> throw new IllegalArgumentException("File name not configured for ETL");
+    };
+  }
+
   public JobId openLibraryDownloadJob(String fileName) {
     return jobRequestScheduler.create(
         aJob()
@@ -51,13 +61,13 @@ public class JobRunrScheduler {
             .withJobRequest(new OpenLibraryDownloadJobRequest(fileName)));
   }
 
-  public JobId openLibraryEtlJob(String fileName) {
+  private JobId openLibraryAuthorEtlJob(String fileName) {
     return jobRequestScheduler.create(
         aJob()
             .scheduleIn(Duration.ofSeconds(1))
             .withName("ETL: %s".formatted(fileName))
             .withAmountOfRetries(10)
-            .withLabels("openlibrary", "etl")
-            .withJobRequest(new OpenLibraryEtlJobRequest(fileName)));
+            .withLabels("openlibrary", "etl", "author")
+            .withJobRequest(new OpenLibraryAuthorEtlJobRequest(fileName)));
   }
 }
