@@ -12,19 +12,17 @@ import org.jobrunr.jobs.lambdas.JobRequestHandler;
 import org.jobrunr.server.runner.ThreadLocalJobContext;
 
 @ApplicationScoped
-public class OpenLibraryDownloadJobHandler
-    implements JobRequestHandler<OpenLibraryDownloadJobRequest> {
+public class FileDownloadJobHandler implements JobRequestHandler<FileDownloadJobRequest> {
 
   private final OpenLibraryDownloadIntegration openLibraryDownloadIntegration;
   private JobDashboardProgressBar jobDashboardProgressBar;
 
-  public OpenLibraryDownloadJobHandler(
-      OpenLibraryDownloadIntegration openLibraryDownloadIntegration) {
+  public FileDownloadJobHandler(OpenLibraryDownloadIntegration openLibraryDownloadIntegration) {
     this.openLibraryDownloadIntegration = openLibraryDownloadIntegration;
   }
 
   @Override
-  public void run(OpenLibraryDownloadJobRequest jobRequest) {
+  public void run(FileDownloadJobRequest jobRequest) {
     final String fileName = jobRequest.fileName();
     final JobContext jobContext = ThreadLocalJobContext.getJobContext();
     final Path dataDir = Path.of("data");

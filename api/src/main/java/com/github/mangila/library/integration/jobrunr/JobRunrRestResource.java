@@ -17,30 +17,21 @@ public class JobRunrRestResource {
     this.jobRunrRestService = jobRunrRestService;
   }
 
-  @Path("/backup")
-  @Produces(MediaType.APPLICATION_JSON)
-  @GET
-  @RunOnVirtualThread
-  public RestResponse<JobScheduledDto> scheduleBackup() {
-    JobScheduledDto jobScheduledDto = jobRunrRestService.scheduleBackup();
-    return RestResponse.ok(jobScheduledDto);
-  }
-
   @Path("/download/{fileName}")
   @Produces(MediaType.APPLICATION_JSON)
   @GET
   @RunOnVirtualThread
   public RestResponse<JobScheduledDto> scheduleDownload(@PathParam("fileName") String fileName) {
-    JobScheduledDto jobScheduledDto = jobRunrRestService.scheduleOpenLibraryDownload(fileName);
+    JobScheduledDto jobScheduledDto = jobRunrRestService.scheduleFileDownload(fileName);
     return RestResponse.ok(jobScheduledDto);
   }
 
-  @Path("/etl/{fileName}")
+  @Path("/import/{fileName}")
   @Produces(MediaType.APPLICATION_JSON)
   @GET
   @RunOnVirtualThread
-  public RestResponse<JobScheduledDto> scheduleEtl(@PathParam("fileName") String fileName) {
-    JobScheduledDto jobScheduledDto = jobRunrRestService.scheduleEtl(fileName);
+  public RestResponse<JobScheduledDto> scheduleImport(@PathParam("fileName") String fileName) {
+    JobScheduledDto jobScheduledDto = jobRunrRestService.scheduleFileImport(fileName);
     return RestResponse.ok(jobScheduledDto);
   }
 }

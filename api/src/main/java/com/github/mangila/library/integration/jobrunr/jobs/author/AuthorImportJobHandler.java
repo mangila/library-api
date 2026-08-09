@@ -1,7 +1,6 @@
-package com.github.mangila.library.integration.jobrunr.jobs;
+package com.github.mangila.library.integration.jobrunr.jobs.author;
 
-import com.github.mangila.library.author.domain.AuthorService;
-import com.github.mangila.library.author.shared.AuthorMapper;
+import com.github.mangila.library.integration.jobrunr.JobRunrScheduler;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -19,21 +18,19 @@ import org.jobrunr.jobs.lambdas.JobRequestHandler;
 import org.jobrunr.server.runner.ThreadLocalJobContext;
 
 @ApplicationScoped
-public class OpenLibraryAuthorEtlJobHandler
-    implements JobRequestHandler<OpenLibraryAuthorEtlJobRequest> {
+public class AuthorImportJobHandler implements JobRequestHandler<AuthorImportJobRequest> {
 
-  private static final int READ_BUFFER_SIZE = (int) FileUtils.ONE_KB * 64;
+  private static final int READ_BUFFER_SIZE = (int) FileUtils.ONE_KB * 128;
+  private static final int BATCH_SIZE = 1024;
 
-  private final AuthorMapper authorMapper;
-  private final AuthorService authorService;
+  private final JobRunrScheduler jobRunrScheduler;
 
-  public OpenLibraryAuthorEtlJobHandler(AuthorMapper authorMapper, AuthorService authorService) {
-    this.authorMapper = authorMapper;
-    this.authorService = authorService;
+  public AuthorImportJobHandler(JobRunrScheduler jobRunrScheduler) {
+    this.jobRunrScheduler = jobRunrScheduler;
   }
 
   @Override
-  public void run(OpenLibraryAuthorEtlJobRequest jobRequest) {
+  public void run(AuthorImportJobRequest jobRequest) {
     final String fileName = jobRequest.fileName();
     final JobContext jobContext = ThreadLocalJobContext.getJobContext();
     final Path dataDir = Path.of("data");
@@ -51,19 +48,14 @@ public class OpenLibraryAuthorEtlJobHandler
             .setSkipHeaderRecord(true)
             .setTrim(true)
             .get();
-    CSVParser.Builder parser =
-        CSVParser.builder().setFormat(format).setBufferSize(READ_BUFFER_SIZE);
     try (final InputStream inputStream = Files.newInputStream(destination);
         final GZIPInputStream gzip = new GZIPInputStream(inputStream, READ_BUFFER_SIZE);
         final InputStreamReader decoder = new InputStreamReader(gzip, StandardCharsets.UTF_8);
-        final CSVParser csvParser = parser.setReader(decoder).get();
-        final Stream<CSVRecord> lines = csvParser.stream()) {
-      jobContext.logger().info(csvParser.getHeaderNames().toString());
-      lines
-          .map(authorMapper::toDomain)
-          .gather(Gatherers.windowFixed(250))
-          .forEach(authorService::saveAll);
-
+        final CSVParser csvParser = format.parse(decoder);
+        final Stream<CSVRecord> authorCsvRecordStream = csvParser.stream()) {
+      authorCsvRecordStream
+          .gather(Gatherers.windowFixed(BATCH_SIZE))
+          .forEach(jobRunrScheduler::enqueueAuthorProcess);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

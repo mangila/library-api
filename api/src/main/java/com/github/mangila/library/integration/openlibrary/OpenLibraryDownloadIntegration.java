@@ -20,7 +20,7 @@ import org.jboss.resteasy.reactive.RestResponse;
 @ApplicationScoped
 public class OpenLibraryDownloadIntegration {
 
-  private static final int DOWNLOAD_BUFFER_SIZE = (int) (FileUtils.ONE_KB * 64);
+  private static final int DOWNLOAD_BUFFER_SIZE = (int) (FileUtils.ONE_KB * 128);
   private static final int WRITE_BUFFER_SIZE = DOWNLOAD_BUFFER_SIZE * 4;
 
   private final OpenLibraryClient openLibraryClient;

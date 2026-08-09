@@ -2,16 +2,17 @@ package com.github.mangila.library.integration.jobrunr;
 
 import static org.jobrunr.scheduling.JobBuilder.aJob;
 
-import com.github.mangila.library.integration.jobrunr.jobs.DatabaseBackupJobRequest;
-import com.github.mangila.library.integration.jobrunr.jobs.OpenLibraryAuthorEtlJobRequest;
-import com.github.mangila.library.integration.jobrunr.jobs.OpenLibraryDownloadJobRequest;
+import com.github.mangila.library.integration.jobrunr.jobs.FileDownloadJobRequest;
+import com.github.mangila.library.integration.jobrunr.jobs.author.AuthorImportJobRequest;
+import com.github.mangila.library.integration.jobrunr.jobs.author.AuthorProcessJobRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.Duration;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.UUID;
+import org.apache.commons.csv.CSVRecord;
 import org.jobrunr.jobs.JobId;
 import org.jobrunr.scheduling.JobRequestScheduler;
-import org.jobrunr.scheduling.RecurringJobBuilder;
-import org.jobrunr.scheduling.cron.Cron;
 
 @ApplicationScoped
 public class JobRunrScheduler {
@@ -22,52 +23,54 @@ public class JobRunrScheduler {
     this.jobRequestScheduler = jobRequestScheduler;
   }
 
-  public JobId databaseBackupJob() {
-    return jobRequestScheduler.create(
-        aJob()
-            .scheduleIn(Duration.ofSeconds(1))
-            .withName("Database Backup")
-            .withAmountOfRetries(10)
-            .withLabels("database", "backup")
-            .withJobRequest(new DatabaseBackupJobRequest()));
+  public void enqueueAuthorProcess(List<CSVRecord> csvRecords) {
+    csvRecords.stream()
+        .map(CSVRecord::toMap)
+        .map(
+            csvRecord ->
+                aJob()
+                    .withName("Process CSV: %s".formatted(csvRecord.get("key")))
+                    .withAmountOfRetries(10)
+                    .withLabels("openlibrary", "process", "author")
+                    .withJobRequest(
+                        new AuthorProcessJobRequest((LinkedHashMap<String, String>) csvRecord)))
+        .forEach(jobRequestScheduler::create);
   }
 
-  public String databaseBackupRecurringJob() {
-    return jobRequestScheduler.createRecurrently(
-        RecurringJobBuilder.aRecurringJob()
-            .withCron(Cron.every5minutes())
-            .withName("Database Backup")
-            .withAmountOfRetries(10)
-            .withLabels("database", "backup")
-            .withJobRequest(new DatabaseBackupJobRequest()));
-  }
-
-  public JobId etlJob(String fileName) {
-    return switch (fileName) {
-      case "ol_dump_authors_latest.txt.gz" -> openLibraryAuthorEtlJob(fileName);
-      case "ol_dump_works_latest.txt.gz" -> new JobId(new UUID(0, 0));
-      case "ol_dump_editions_latest.txt.gz" -> new JobId(new UUID(0, 0));
-      default -> throw new IllegalArgumentException("File name not configured for ETL");
-    };
-  }
-
-  public JobId openLibraryDownloadJob(String fileName) {
+  public JobId scheduleFileDownload(String fileName) {
     return jobRequestScheduler.create(
         aJob()
             .scheduleIn(Duration.ofSeconds(1))
             .withName("Download: %s".formatted(fileName))
-            .withAmountOfRetries(10)
+            .withAmountOfRetries(3)
             .withLabels("openlibrary", "download")
-            .withJobRequest(new OpenLibraryDownloadJobRequest(fileName)));
+            .withJobRequest(new FileDownloadJobRequest(fileName)));
   }
 
-  private JobId openLibraryAuthorEtlJob(String fileName) {
+  public JobId scheduleFileImport(String fileName) {
+    return switch (fileName) {
+      case "ol_dump_authors_latest.txt.gz" -> scheduleAuthorImport(fileName);
+      case "ol_dump_works_latest.txt.gz" -> scheduleWorksImport(fileName);
+      case "ol_dump_editions_latest.txt.gz" -> scheduleEditionsImport(fileName);
+      default -> throw new IllegalArgumentException("File name not configured for import");
+    };
+  }
+
+  private JobId scheduleAuthorImport(String fileName) {
     return jobRequestScheduler.create(
         aJob()
             .scheduleIn(Duration.ofSeconds(1))
-            .withName("ETL: %s".formatted(fileName))
+            .withName("Import: %s".formatted(fileName))
             .withAmountOfRetries(10)
-            .withLabels("openlibrary", "etl", "author")
-            .withJobRequest(new OpenLibraryAuthorEtlJobRequest(fileName)));
+            .withLabels("openlibrary", "import", "author")
+            .withJobRequest(new AuthorImportJobRequest(fileName)));
+  }
+
+  private JobId scheduleEditionsImport(String fileName) {
+    return new JobId(new UUID(0, 0));
+  }
+
+  private JobId scheduleWorksImport(String fileName) {
+    return new JobId(new UUID(0, 0));
   }
 }

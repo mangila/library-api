@@ -39,6 +39,16 @@
 
   <dependencies>
     <dependency>
+      <groupId>io.github.mangila</groupId>
+      <artifactId>ensure4j</artifactId>
+      <version>4.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkiverse.httpproblem</groupId>
+      <artifactId>quarkus-http-problem</artifactId>
+      <version>3.33.2</version>
+    </dependency>
+    <dependency>
       <groupId>io.quarkiverse.mcp</groupId>
       <artifactId>quarkus-mcp-server-http</artifactId>
     </dependency>
@@ -84,7 +94,11 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jacoco</artifactId>
+      <artifactId>quarkus-jdbc-h2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jdbc-postgresql</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -97,6 +111,10 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-client-jackson</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -127,8 +145,48 @@
       <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>1.14.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
+      <version>26.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jobrunr</groupId>
+      <artifactId>quarkus-jobrunr</artifactId>
+      <version>8.7.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5</artifactId>
+      <version>1.4.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jacoco</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit-component</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit-mockito</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -137,34 +195,22 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>io.quarkiverse.jdbc</groupId>
-      <artifactId>quarkus-jdbc-sqlite4j</artifactId>
-      <version>0.0.8</version>
+      <groupId>net.javacrumbs.json-unit</groupId>
+      <artifactId>json-unit-assertj</artifactId>
+      <version>5.1.1</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-csv</artifactId>
-      <version>1.14.1</version>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.27.7</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>io.quarkiverse.httpproblem</groupId>
-      <artifactId>quarkus-http-problem</artifactId>
-      <version>3.33.2</version>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-rest-client-jackson</artifactId>
-      <version>3.37.4</version>
-    </dependency>
-    <dependency>
-      <groupId>io.github.mangila</groupId>
-      <artifactId>ensure4j</artifactId>
-      <version>4.0.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jobrunr</groupId>
-      <artifactId>quarkus-jobrunr</artifactId>
-      <version>8.7.1</version>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>4.3.0</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -205,7 +251,7 @@
             <sortPom>
               <endWithNewline>true</endWithNewline>
               <keepBlankLines>true</keepBlankLines>
-              <sortDependencies>version,scope,groupId,artifactId</sortDependencies>
+              <sortDependencies>scope,groupId,artifactId</sortDependencies>
               <sortPlugins>groupId,artifactId</sortPlugins>
               <sortProperties>true</sortProperties>
             </sortPom>
@@ -251,6 +297,9 @@
         <configuration>
           <argLine>@{argLine}</argLine>
           <systemPropertyVariables>
+            <quarkus.package.type>native</quarkus.package.type>
+            <quarkus.test.profile>it</quarkus.test.profile>
+            <quarkus.test.integration-test-profile>test,it</quarkus.test.integration-test-profile>
             <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
             <maven.home>${maven.home}</maven.home>

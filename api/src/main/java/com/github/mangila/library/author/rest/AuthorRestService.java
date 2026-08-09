@@ -9,20 +9,20 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 @ApplicationScoped
-public class AuthorWebService {
+public class AuthorRestService {
 
   private final AuthorMapper authorMapper;
   private final AuthorService authorService;
   private final UuidFactory uuidFactory;
 
-  public AuthorWebService(
+  public AuthorRestService(
       AuthorService authorService, AuthorMapper authorMapper, UuidFactory uuidFactory) {
     this.authorService = authorService;
     this.authorMapper = authorMapper;
     this.uuidFactory = uuidFactory;
   }
 
-  public AuthorWebDto findById(@NotNull String id) {
+  public AuthorRestDto findById(@NotNull String id) {
     final UUID uuid = uuidFactory.parse(id);
     return authorService
         .findByIdOptional(uuid)

@@ -12,18 +12,18 @@ import org.jboss.resteasy.reactive.RestResponse;
 @Path("api/v1/authors")
 public class AuthorRestResource {
 
-  private final AuthorWebService authorWebService;
+  private final AuthorRestService authorRestService;
 
-  public AuthorRestResource(AuthorWebService authorWebService) {
-    this.authorWebService = authorWebService;
+  public AuthorRestResource(AuthorRestService authorRestService) {
+    this.authorRestService = authorRestService;
   }
 
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   @GET
   @RunOnVirtualThread
-  public RestResponse<AuthorWebDto> findById(@PathParam("id") @UUID String id) {
-    final AuthorWebDto dto = authorWebService.findById(id);
+  public RestResponse<AuthorRestDto> findById(@PathParam("id") @UUID String id) {
+    final AuthorRestDto dto = authorRestService.findById(id);
     return RestResponse.ok(dto);
   }
 }
