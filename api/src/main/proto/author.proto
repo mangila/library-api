@@ -16,6 +16,17 @@ message FindByIdRequest {
 
 message AuthorRpcDto {
   string id = 1;
-  string name = 2;
-  repeated string books = 3;
+  string open_library_key = 2;
+  string name = 3;
+  string personal_name = 4;
+  repeated string alternate_names = 5;
+  repeated string uris = 6;
+  string bio = 7;
+  string location = 8;
+  string birth_date = 9;
+  string death_date = 10;
+  string wikipedia = 11;
+  repeated string links = 12;
+  repeated string books = 13;
+  repeated string works = 14;
 }

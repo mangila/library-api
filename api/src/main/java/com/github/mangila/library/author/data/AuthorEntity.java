@@ -1,7 +1,6 @@
 package com.github.mangila.library.author.data;
 
 import jakarta.persistence.*;
-import java.sql.Types;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,29 +8,59 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 import org.hibernate.type.SqlTypes;
 
 @Entity(name = "Author")
 @Table(name = "author")
-@Audited
 public class AuthorEntity {
 
-  @Id
-  @JdbcTypeCode(Types.VARCHAR)
-  private UUID id;
+  @Id private UUID id;
 
-  @Column(name = "name", nullable = false)
-  @JdbcTypeCode(Types.VARCHAR)
+  @Column(name = "open_library_key", nullable = false)
+  private String openLibraryKey;
+
+  @Column(name = "name")
   private String name;
+
+  @Column(name = "personal_name")
+  private String personalName;
+
+  @Column(name = "alternate_names")
+  @JdbcTypeCode(SqlTypes.JSON)
+  private List<String> alternateNames = new ArrayList<>();
+
+  @Column(name = "uris")
+  @JdbcTypeCode(SqlTypes.JSON)
+  private List<String> uris = new ArrayList<>();
+
+  @Column(name = "bio")
+  private String bio;
+
+  @Column(name = "location")
+  private String location;
+
+  @Column(name = "birth_date")
+  private String birthDate;
+
+  @Column(name = "death_date")
+  private String deathDate;
+
+  @Column(name = "wikipedia")
+  private String wikipedia;
+
+  @Column(name = "links")
+  @JdbcTypeCode(SqlTypes.JSON)
+  private List<String> links = new ArrayList<>();
 
   @Column(name = "books")
   @JdbcTypeCode(SqlTypes.JSON)
-  private List<UUID> books = new ArrayList<>();
+  private List<String> books = new ArrayList<>();
+
+  @Column(name = "works")
+  @JdbcTypeCode(SqlTypes.JSON)
+  private List<String> works = new ArrayList<>();
 
   @Column(name = "created_at")
-  @NotAudited
   @CreationTimestamp
   private Instant createdAt;
 
@@ -47,7 +76,19 @@ public class AuthorEntity {
     // do nothing for JPA
   }
 
-  public List<UUID> getBooks() {
+  public List<String> getAlternateNames() {
+    return alternateNames;
+  }
+
+  public String getBio() {
+    return bio;
+  }
+
+  public String getBirthDate() {
+    return birthDate;
+  }
+
+  public List<String> getBooks() {
     return books;
   }
 
@@ -55,23 +96,67 @@ public class AuthorEntity {
     return createdAt;
   }
 
+  public String getDeathDate() {
+    return deathDate;
+  }
+
   public UUID getId() {
     return id;
+  }
+
+  public List<String> getLinks() {
+    return links;
+  }
+
+  public String getLocation() {
+    return location;
   }
 
   public String getName() {
     return name;
   }
 
+  public String getOpenLibraryKey() {
+    return openLibraryKey;
+  }
+
+  public String getPersonalName() {
+    return personalName;
+  }
+
   public Instant getUpdatedAt() {
     return updatedAt;
+  }
+
+  public List<String> getUris() {
+    return uris;
   }
 
   public Long getVersion() {
     return version;
   }
 
-  public void setBooks(List<UUID> books) {
+  public String getWikipedia() {
+    return wikipedia;
+  }
+
+  public List<String> getWorks() {
+    return works;
+  }
+
+  public void setAlternateNames(List<String> alternateNames) {
+    this.alternateNames = alternateNames;
+  }
+
+  public void setBio(String bio) {
+    this.bio = bio;
+  }
+
+  public void setBirthDate(String birthDate) {
+    this.birthDate = birthDate;
+  }
+
+  public void setBooks(List<String> books) {
     this.books = books;
   }
 
@@ -79,19 +164,51 @@ public class AuthorEntity {
     this.createdAt = createdAt;
   }
 
+  public void setDeathDate(String deathDate) {
+    this.deathDate = deathDate;
+  }
+
   public void setId(UUID id) {
     this.id = id;
+  }
+
+  public void setLinks(List<String> links) {
+    this.links = links;
+  }
+
+  public void setLocation(String location) {
+    this.location = location;
   }
 
   public void setName(String name) {
     this.name = name;
   }
 
+  public void setOpenLibraryKey(String openLibraryKey) {
+    this.openLibraryKey = openLibraryKey;
+  }
+
+  public void setPersonalName(String personalName) {
+    this.personalName = personalName;
+  }
+
   public void setUpdatedAt(Instant updatedAt) {
     this.updatedAt = updatedAt;
   }
 
+  public void setUris(List<String> uris) {
+    this.uris = uris;
+  }
+
   public void setVersion(Long version) {
     this.version = version;
+  }
+
+  public void setWikipedia(String wikipedia) {
+    this.wikipedia = wikipedia;
+  }
+
+  public void setWorks(List<String> works) {
+    this.works = works;
   }
 }

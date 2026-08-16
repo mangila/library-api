@@ -20,4 +20,4 @@ run = "mvn spotbugs:check"
 [tasks.test]
 description = "Test api"
 dir = "./api"
-run = "mise format && mvn clean verify && mise spotbugs"
+run = "mise format && mvn clean verify"

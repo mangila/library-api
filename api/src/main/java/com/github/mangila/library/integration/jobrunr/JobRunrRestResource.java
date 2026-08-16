@@ -1,10 +1,9 @@
 package com.github.mangila.library.integration.jobrunr;
 
+import com.github.mangila.library.shared.LibraryType;
 import io.smallrye.common.annotation.RunOnVirtualThread;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.validation.constraints.Max;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.jboss.resteasy.reactive.RestResponse;
 
@@ -17,21 +16,31 @@ public class JobRunrRestResource {
     this.jobRunrRestService = jobRunrRestService;
   }
 
-  @Path("/download/{fileName}")
+  @Path("/download/{type}")
   @Produces(MediaType.APPLICATION_JSON)
   @GET
   @RunOnVirtualThread
-  public RestResponse<JobScheduledDto> scheduleDownload(@PathParam("fileName") String fileName) {
-    JobScheduledDto jobScheduledDto = jobRunrRestService.scheduleFileDownload(fileName);
+  public RestResponse<JobScheduledDto> scheduleFileDownload(@PathParam("type") LibraryType type) {
+    JobScheduledDto jobScheduledDto = jobRunrRestService.scheduleFileDownload(type);
     return RestResponse.ok(jobScheduledDto);
   }
 
-  @Path("/import/{fileName}")
+  @Path("/import/{type}")
   @Produces(MediaType.APPLICATION_JSON)
   @GET
   @RunOnVirtualThread
-  public RestResponse<JobScheduledDto> scheduleImport(@PathParam("fileName") String fileName) {
-    JobScheduledDto jobScheduledDto = jobRunrRestService.scheduleFileImport(fileName);
+  public RestResponse<JobScheduledDto> scheduleFileImport(@PathParam("type") LibraryType type) {
+    JobScheduledDto jobScheduledDto = jobRunrRestService.scheduleFileImport(type);
+    return RestResponse.ok(jobScheduledDto);
+  }
+
+  @Path("/process/{type}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @GET
+  @RunOnVirtualThread
+  public RestResponse<JobScheduledDto> scheduleStagingProcessing(
+      @PathParam("type") LibraryType type, @QueryParam("limit") @Max(5000) int limit) {
+    JobScheduledDto jobScheduledDto = jobRunrRestService.scheduleStagingProcessing(type, limit);
     return RestResponse.ok(jobScheduledDto);
   }
 }

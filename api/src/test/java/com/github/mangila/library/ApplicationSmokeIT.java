@@ -10,6 +10,14 @@ class ApplicationSmokeIT {
 
   @Test
   void smoke() {
-    given().when().get("/q/health/ready").then().statusCode(200);
+    given()
+        .when()
+        .log()
+        .everything()
+        .get("/q/health/ready")
+        .then()
+        .log()
+        .everything()
+        .statusCode(200);
   }
 }

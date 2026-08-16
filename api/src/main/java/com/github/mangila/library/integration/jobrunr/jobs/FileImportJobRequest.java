@@ -4,14 +4,14 @@ import com.github.mangila.library.shared.FilePath;
 import io.github.mangila.ensure4j.Ensure;
 import org.jobrunr.jobs.lambdas.JobRequest;
 
-public record FileDownloadJobRequest(FilePath filePath) implements JobRequest {
+public record FileImportJobRequest(FilePath filePath) implements JobRequest {
 
-  public FileDownloadJobRequest {
+  public FileImportJobRequest {
     Ensure.notNull(filePath);
   }
 
   @Override
-  public Class<FileDownloadJobHandler> getJobRequestHandler() {
-    return FileDownloadJobHandler.class;
+  public Class<FileImportJobHandler> getJobRequestHandler() {
+    return FileImportJobHandler.class;
   }
 }

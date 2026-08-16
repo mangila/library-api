@@ -2,6 +2,7 @@ package com.github.mangila.library.integration.jobrunr;
 
 import com.github.mangila.library.integration.openlibrary.OpenLibraryConfig;
 import com.github.mangila.library.shared.HttpProblemException;
+import com.github.mangila.library.shared.LibraryType;
 import io.github.mangila.ensure4j.Ensure;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.jobrunr.jobs.JobId;
@@ -18,27 +19,27 @@ public class JobRunrRestService {
     this.jobRunrScheduler = jobRunrScheduler;
   }
 
-  public JobScheduledDto scheduleFileDownload(String fileName) {
+  public JobScheduledDto scheduleFileDownload(LibraryType libraryType) {
     Ensure.isTrue(
         openLibraryConfig.downloadEnabled(),
         () -> HttpProblemException.badRequest("File download is disabled"));
-    final boolean anyMatch =
-        openLibraryConfig.downloadFileNames().stream().anyMatch(fileName::equals);
-    Ensure.isTrue(
-        anyMatch, () -> HttpProblemException.badRequest("File name not configured for download"));
-    final JobId jobId = jobRunrScheduler.scheduleFileDownload(fileName);
+    final JobId jobId = jobRunrScheduler.scheduleFileDownload(libraryType);
     return JobScheduledDto.from(jobId);
   }
 
-  public JobScheduledDto scheduleFileImport(String fileName) {
+  public JobScheduledDto scheduleFileImport(LibraryType libraryType) {
     Ensure.isTrue(
         openLibraryConfig.importEnabled(),
         () -> HttpProblemException.badRequest("Import is disabled"));
-    final boolean anyMatch =
-        openLibraryConfig.importFileNames().stream().anyMatch(fileName::equals);
+    final JobId jobId = jobRunrScheduler.scheduleFileImport(libraryType);
+    return JobScheduledDto.from(jobId);
+  }
+
+  public JobScheduledDto scheduleStagingProcessing(LibraryType libraryType, int limit) {
     Ensure.isTrue(
-        anyMatch, () -> HttpProblemException.badRequest("File name not configured for import"));
-    final JobId jobId = jobRunrScheduler.scheduleFileImport(fileName);
+        openLibraryConfig.processEnabled(),
+        () -> HttpProblemException.badRequest("Processing is disabled"));
+    final JobId jobId = jobRunrScheduler.scheduleStagingProcessing(libraryType, limit);
     return JobScheduledDto.from(jobId);
   }
 }

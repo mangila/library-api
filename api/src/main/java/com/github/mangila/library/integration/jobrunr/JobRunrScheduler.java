@@ -1,21 +1,27 @@
 package com.github.mangila.library.integration.jobrunr;
 
 import static org.jobrunr.scheduling.JobBuilder.aJob;
+import static org.jobrunr.scheduling.RecurringJobBuilder.*;
 
 import com.github.mangila.library.integration.jobrunr.jobs.FileDownloadJobRequest;
-import com.github.mangila.library.integration.jobrunr.jobs.author.AuthorImportJobRequest;
-import com.github.mangila.library.integration.jobrunr.jobs.author.AuthorProcessJobRequest;
+import com.github.mangila.library.integration.jobrunr.jobs.FileImportJobRequest;
+import com.github.mangila.library.integration.jobrunr.jobs.StagingDeleteJobRequest;
+import com.github.mangila.library.integration.jobrunr.jobs.StagingProcessJobRequest;
+import com.github.mangila.library.shared.FilePath;
+import com.github.mangila.library.shared.LibraryType;
+import io.quarkus.logging.Log;
+import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
-import java.time.Duration;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.UUID;
-import org.apache.commons.csv.CSVRecord;
+import jakarta.enterprise.event.Observes;
+import java.nio.file.Path;
 import org.jobrunr.jobs.JobId;
 import org.jobrunr.scheduling.JobRequestScheduler;
+import org.jobrunr.scheduling.cron.Cron;
 
 @ApplicationScoped
 public class JobRunrScheduler {
+
+  private static final Path DATA_DIR = Path.of("data");
 
   private final JobRequestScheduler jobRequestScheduler;
 
@@ -23,54 +29,58 @@ public class JobRunrScheduler {
     this.jobRequestScheduler = jobRequestScheduler;
   }
 
-  public void enqueueAuthorProcess(List<CSVRecord> csvRecords) {
-    csvRecords.stream()
-        .map(CSVRecord::toMap)
-        .map(
-            csvRecord ->
-                aJob()
-                    .withName("Process CSV: %s".formatted(csvRecord.get("key")))
-                    .withAmountOfRetries(10)
-                    .withLabels("openlibrary", "process", "author")
-                    .withJobRequest(
-                        new AuthorProcessJobRequest((LinkedHashMap<String, String>) csvRecord)))
-        .forEach(jobRequestScheduler::create);
+  public void onApplicationStart(@Observes StartupEvent event) {
+    jobRequestScheduler.createRecurrently(
+        aRecurringJob()
+            .withName("Staging process: " + LibraryType.AUTHOR)
+            .withCron(Cron.every15seconds())
+            .withLabels("openlibrary", "process")
+            .withJobRequest(new StagingProcessJobRequest(LibraryType.AUTHOR, 512)));
+    Log.infof("Scheduled staging process");
+    jobRequestScheduler.createRecurrently(
+        aRecurringJob()
+            .withName("Staging delete")
+            .withCron(Cron.every5minutes())
+            .withLabels("openlibrary", "delete")
+            .withJobRequest(new StagingDeleteJobRequest()));
+    Log.infof("Scheduled staging delete");
   }
 
-  public JobId scheduleFileDownload(String fileName) {
+  public JobId scheduleFileDownload(LibraryType libraryType) {
+    final FilePath filePath = getFilePath(libraryType);
+    Log.infof("Scheduling file download: %s", filePath);
     return jobRequestScheduler.create(
         aJob()
-            .scheduleIn(Duration.ofSeconds(1))
-            .withName("Download: %s".formatted(fileName))
-            .withAmountOfRetries(3)
-            .withLabels("openlibrary", "download")
-            .withJobRequest(new FileDownloadJobRequest(fileName)));
-  }
-
-  public JobId scheduleFileImport(String fileName) {
-    return switch (fileName) {
-      case "ol_dump_authors_latest.txt.gz" -> scheduleAuthorImport(fileName);
-      case "ol_dump_works_latest.txt.gz" -> scheduleWorksImport(fileName);
-      case "ol_dump_editions_latest.txt.gz" -> scheduleEditionsImport(fileName);
-      default -> throw new IllegalArgumentException("File name not configured for import");
-    };
-  }
-
-  private JobId scheduleAuthorImport(String fileName) {
-    return jobRequestScheduler.create(
-        aJob()
-            .scheduleIn(Duration.ofSeconds(1))
-            .withName("Import: %s".formatted(fileName))
+            .withName("Download: %s".formatted(libraryType.getFileName()))
             .withAmountOfRetries(10)
-            .withLabels("openlibrary", "import", "author")
-            .withJobRequest(new AuthorImportJobRequest(fileName)));
+            .withLabels("openlibrary", "download")
+            .withJobRequest(new FileDownloadJobRequest(filePath)));
   }
 
-  private JobId scheduleEditionsImport(String fileName) {
-    return new JobId(new UUID(0, 0));
+  public JobId scheduleFileImport(LibraryType libraryType) {
+    final FilePath filePath = getFilePath(libraryType);
+    Log.infof("Scheduling file import: %s", filePath);
+    return jobRequestScheduler.create(
+        aJob()
+            .withName("Import: %s".formatted(libraryType.getFileName()))
+            .withAmountOfRetries(3)
+            .withLabels("openlibrary", "import")
+            .withJobRequest(new FileImportJobRequest(filePath)));
   }
 
-  private JobId scheduleWorksImport(String fileName) {
-    return new JobId(new UUID(0, 0));
+  public JobId scheduleStagingProcessing(LibraryType libraryType, int limit) {
+    Log.infof("Scheduling file processing: %s", libraryType);
+    return jobRequestScheduler.create(
+        aJob()
+            .withName("Staging Process: %s".formatted(libraryType))
+            .withAmountOfRetries(10)
+            .withLabels("openlibrary", "process")
+            .withJobRequest(new StagingProcessJobRequest(libraryType, limit)));
+  }
+
+  private FilePath getFilePath(LibraryType libraryType) {
+    final String fileName = libraryType.getFileName();
+    final Path path = DATA_DIR.resolve(fileName);
+    return new FilePath(path);
   }
 }

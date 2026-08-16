@@ -1,14 +1,26 @@
 ### Schedule download for file: ol_dump_authors_latest.txt.gz
-GET http://localhost:8080/api/v1/jobrunr/download/ol_dump_authors_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/download/AUTHOR
 
 ### Schedule download for file: ol_dump_works_latest.txt.gz
-GET http://localhost:8080/api/v1/jobrunr/download/ol_dump_works_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/download/WORK
 
 ### Schedule download for file: ol_dump_editions_latest.txt.gz
-GET http://localhost:8080/api/v1/jobrunr/download/ol_dump_editions_latest.txt.gz
-
-### Schedule database backup
-GET http://localhost:8080/api/v1/jobrunr/backup
+GET http://localhost:8080/api/v1/jobrunr/download/EDITION
 
 ### Schedule import for file: ol_dump_authors_latest.txt.gz
-GET http://localhost:8080/api/v1/jobrunr/import/ol_dump_authors_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/import/AUTHOR
+
+### Schedule import for file: ol_dump_works_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/import/WORK
+
+### Schedule import for file: ol_dump_editions_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/import/EDITION
+
+### Schedule process for file: ol_dump_authors_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/process/AUTHOR?limit=5000
+
+### Schedule process for file: ol_dump_works_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/process/WORK
+
+### Schedule process for file: ol_dump_editions_latest.txt.gz
+GET http://localhost:8080/api/v1/jobrunr/process/EDITION

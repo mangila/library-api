@@ -10,14 +10,15 @@ import org.jboss.resteasy.reactive.RestResponse;
 @RegisterRestClient(configKey = "openlibrary")
 public interface OpenLibraryClient {
 
-  @HEAD
-  @Path("/data/{fileName}")
-  Response checkDownload(@PathParam("fileName") String fileName);
-
   @GET
   @Path("/data/{fileName}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  RestResponse<InputStream> download(@PathParam("fileName") String fileName);
+  RestResponse<InputStream> download(
+      @PathParam("fileName") String fileName, @HeaderParam("Range") String rangeHeader);
+
+  @HEAD
+  @Path("/data/{fileName}")
+  Response metadata(@PathParam("fileName") String fileName);
 
   @HEAD
   Response ping();
