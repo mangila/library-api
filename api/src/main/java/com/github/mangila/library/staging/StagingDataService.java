@@ -22,6 +22,7 @@ public class StagingDataService {
     return stagingRepository.copyToPostgres(stream, contentLength, progressCallback);
   }
 
+  @Transactional
   public long deleteAllProcessed() {
     return stagingRepository.delete("processed = true");
   }

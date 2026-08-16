@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 @Entity(name = "Author")
@@ -64,14 +63,6 @@ public class AuthorEntity {
   @CreationTimestamp
   private Instant createdAt;
 
-  @Column(name = "updated_at")
-  @UpdateTimestamp
-  private Instant updatedAt;
-
-  @Column(name = "rev_version")
-  @Version
-  private Long version;
-
   public AuthorEntity() {
     // do nothing for JPA
   }
@@ -124,16 +115,8 @@ public class AuthorEntity {
     return personalName;
   }
 
-  public Instant getUpdatedAt() {
-    return updatedAt;
-  }
-
   public List<String> getUris() {
     return uris;
-  }
-
-  public Long getVersion() {
-    return version;
   }
 
   public String getWikipedia() {
@@ -192,16 +175,8 @@ public class AuthorEntity {
     this.personalName = personalName;
   }
 
-  public void setUpdatedAt(Instant updatedAt) {
-    this.updatedAt = updatedAt;
-  }
-
   public void setUris(List<String> uris) {
     this.uris = uris;
-  }
-
-  public void setVersion(Long version) {
-    this.version = version;
   }
 
   public void setWikipedia(String wikipedia) {

@@ -14,8 +14,6 @@ create table author
     links            jsonb,
     uris             jsonb,
     works            jsonb,
-    rev_version      bigint                      not null,
     created_at       timestamp(6) with time zone not null,
-    updated_at       timestamp(6) with time zone not null,
     primary key (id)
 );
