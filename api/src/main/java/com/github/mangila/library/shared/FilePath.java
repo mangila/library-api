@@ -30,7 +30,7 @@ public record FilePath(Path value) {
     }
   }
 
-  public Path toTempFile() {
+  public Path toTempPath() {
     return value.resolveSibling(fileName() + ".tmp");
   }
 }

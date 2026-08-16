@@ -58,8 +58,11 @@ public class FileDownloadJobHandler implements JobRequestHandler<FileDownloadJob
                 headers.forEach(
                     (key, value) -> jobContext.logger().info("%s: %s".formatted(key, value)));
                 final long length = parseContentLength(headers);
-                try (RandomAccessFile raf = new RandomAccessFile(filePath.toFile(), "rw")) {
+                try (RandomAccessFile raf = new RandomAccessFile(filePath.toFile(), "rw");
+                    RandomAccessFile rafTemp =
+                        new RandomAccessFile(filePath.toTempPath().toFile(), "rw")) {
                   raf.setLength(length);
+                  rafTemp.setLength(length);
                 }
                 return length;
               }
@@ -103,7 +106,7 @@ public class FileDownloadJobHandler implements JobRequestHandler<FileDownloadJob
             Range header: %s
             """
                 .formatted(FileUtils.byteCountToDisplaySize(contentLength), rangeHeaderValue));
-    final Path temp = filePath.toTempFile();
+    final Path tempPath = filePath.toTempPath();
     try (final RestResponse<InputStream> response =
         openLibraryClient.download(filePath.fileName(), rangeHeaderValue)) {
       Ensure.isTrue(response.hasEntity());
@@ -111,19 +114,19 @@ public class FileDownloadJobHandler implements JobRequestHandler<FileDownloadJob
               new BufferedInputStream(
                   new ProgressInputStream(response.getEntity(), contentLength, progressCallback),
                   (int) FileUtils.ONE_KB * 32);
-          FileChannel fileChannel = FileChannel.open(temp, StandardOpenOption.WRITE)) {
+          FileChannel fileChannel = FileChannel.open(tempPath, StandardOpenOption.WRITE)) {
         fileChannel.position(currentRange);
         try (OutputStream outputStream = Channels.newOutputStream(fileChannel)) {
           inputStream.transferTo(outputStream);
         }
         Files.move(
-            temp,
+            tempPath,
             filePath.value(),
             StandardCopyOption.ATOMIC_MOVE,
             StandardCopyOption.REPLACE_EXISTING);
       }
     } finally {
-      Files.deleteIfExists(temp);
+      Files.deleteIfExists(tempPath);
     }
     jobContext.logger().info("File download complete: %s".formatted(filePath.value()));
   }
