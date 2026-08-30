@@ -1,6 +1,6 @@
 package com.github.mangila.library.integration.jobrunr;
 
-import com.github.mangila.library.integration.openlibrary.OpenLibraryConfig;
+import com.github.mangila.library.config.OpenLibraryConfig;
 import com.github.mangila.library.shared.HttpProblemException;
 import com.github.mangila.library.shared.LibraryType;
 import io.github.mangila.ensure4j.Ensure;

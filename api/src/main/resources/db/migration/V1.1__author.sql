@@ -1,6 +1,6 @@
 create table author
 (
-    id               text                        not null,
+    id               uuid                        not null,
     open_library_key text                        not null,
     name             text,
     personal_name    text,

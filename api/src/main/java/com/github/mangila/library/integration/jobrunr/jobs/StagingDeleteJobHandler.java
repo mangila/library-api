@@ -2,6 +2,7 @@ package com.github.mangila.library.integration.jobrunr.jobs;
 
 import com.github.mangila.library.staging.StagingDataService;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import org.jobrunr.jobs.context.JobContext;
 import org.jobrunr.jobs.lambdas.JobRequestHandler;
 import org.jobrunr.server.runner.ThreadLocalJobContext;
@@ -16,6 +17,7 @@ public class StagingDeleteJobHandler implements JobRequestHandler<StagingDeleteJ
   }
 
   @Override
+  @Transactional
   public void run(StagingDeleteJobRequest jobRequest) {
     final JobContext jobContext = ThreadLocalJobContext.getJobContext();
     final long rows = stagingDataService.deleteAllProcessed();

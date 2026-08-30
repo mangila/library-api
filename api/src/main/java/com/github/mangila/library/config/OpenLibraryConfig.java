@@ -1,4 +1,4 @@
-package com.github.mangila.library.integration.openlibrary;
+package com.github.mangila.library.config;
 
 import io.smallrye.config.ConfigMapping;
 

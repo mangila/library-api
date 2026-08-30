@@ -1,31 +1,26 @@
 package com.github.mangila.library.shared;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import java.util.UUID;
 import org.jboss.logging.MDC;
 
-@ApplicationScoped
-public class MdcManager {
+public final class MdcManager {
 
   public static final String TRACE_ID_HEADER_KEY = "x-trace-id";
   private static final String TRACE_ID_MDC_KEY = "traceId";
 
-  private final UuidFactory uuidFactory;
-
-  public MdcManager(UuidFactory uuidFactory) {
-    this.uuidFactory = uuidFactory;
+  public static String getTraceId() {
+    return (String) MDC.get(TRACE_ID_MDC_KEY);
   }
 
-  public Object getTraceId() {
-    return MDC.get(TRACE_ID_MDC_KEY);
+  public static void removeTraceId() {
+    MDC.remove(TRACE_ID_MDC_KEY);
   }
 
-  public void initializeTraceId() {
-    final UUID traceId = uuidFactory.generate();
+  public static void setTraceId(UUID traceId) {
     MDC.put(TRACE_ID_MDC_KEY, traceId.toString());
   }
 
-  public void removeTraceId() {
-    MDC.remove(TRACE_ID_MDC_KEY);
+  private MdcManager() {
+    throw new UnsupportedOperationException("Utility class");
   }
 }

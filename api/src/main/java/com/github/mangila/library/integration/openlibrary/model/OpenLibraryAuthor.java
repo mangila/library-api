@@ -19,9 +19,7 @@ public record OpenLibraryAuthor(
     String death_date,
     String date,
     String wikipedia,
-    List<OpenLibraryLink> links,
-    List<String> books,
-    List<String> works) {
+    List<OpenLibraryLink> links) {
 
   public String getBioText() {
     if (bio == null || bio.isNull()) return null;

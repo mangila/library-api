@@ -32,13 +32,6 @@ public class JobRunrScheduler {
   public void onApplicationStart(@Observes StartupEvent event) {
     jobRequestScheduler.createRecurrently(
         aRecurringJob()
-            .withName("Staging process: " + LibraryType.AUTHOR)
-            .withCron(Cron.every15seconds())
-            .withLabels("openlibrary", "process")
-            .withJobRequest(new StagingProcessJobRequest(LibraryType.AUTHOR, 512)));
-    Log.infof("Scheduled staging process");
-    jobRequestScheduler.createRecurrently(
-        aRecurringJob()
             .withName("Staging delete")
             .withCron(Cron.every5minutes())
             .withLabels("openlibrary", "delete")

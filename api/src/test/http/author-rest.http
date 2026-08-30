@@ -1,3 +1,3 @@
 ### GET author by ID
-GET http://localhost:8080/api/v1/authors/bca8f838-4f93-492c-ba4b-ec7d4ac496d3
+GET http://localhost:8080/api/v1/authors/e011eaac-ca31-440a-ba0f-a20e6df9d011
 Accept: application/json

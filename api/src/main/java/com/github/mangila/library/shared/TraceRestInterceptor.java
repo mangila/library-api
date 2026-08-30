@@ -1,34 +1,38 @@
 package com.github.mangila.library.shared;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
-import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.MultivaluedMap;
+import java.util.UUID;
 import org.jboss.resteasy.reactive.server.ServerRequestFilter;
 import org.jboss.resteasy.reactive.server.ServerResponseFilter;
 
-@Provider
+@ApplicationScoped
 public class TraceRestInterceptor {
 
-  private final MdcManager mdcManager;
+  private final UuidFactory uuidFactory;
 
-  public TraceRestInterceptor(MdcManager mdcManager) {
-    this.mdcManager = mdcManager;
+  public TraceRestInterceptor(UuidFactory uuidFactory) {
+    this.uuidFactory = uuidFactory;
   }
 
   @ServerRequestFilter(preMatching = true)
   public void filterRequest(ContainerRequestContext requestContext) {
-    mdcManager.initializeTraceId();
+    final UUID traceId = uuidFactory.generate();
+    MdcManager.setTraceId(traceId);
+    requestContext.setProperty("traceId", traceId.toString());
   }
 
   @ServerResponseFilter
   public void filterResponse(
       ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
     try {
-      final var responseContextHeaders = responseContext.getHeaders();
-      final Object traceId = mdcManager.getTraceId();
+      final Object traceId = requestContext.getProperty("traceId");
+      final MultivaluedMap<String, Object> responseContextHeaders = responseContext.getHeaders();
       responseContextHeaders.add(MdcManager.TRACE_ID_HEADER_KEY, traceId);
     } finally {
-      mdcManager.removeTraceId();
+      MdcManager.removeTraceId();
     }
   }
 }

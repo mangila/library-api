@@ -71,6 +71,7 @@ public class FileImportJobHandler implements JobRequestHandler<FileImportJobRequ
       long rows =
           stagingDataService.copyToPostgres(gzip, estimatedDecompressedSize, progressCallback);
       jobContext.logger().info("Imported: %s rows".formatted(rows));
+      jobDashboardProgressBar.setProgress(estimatedDecompressedSize);
     }
   }
 }

@@ -8,6 +8,7 @@ import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.quarkus.grpc.GlobalInterceptor;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.UUID;
 
 @ApplicationScoped
 @GlobalInterceptor
@@ -16,21 +17,23 @@ public class TraceGrpcInterceptor implements ServerInterceptor {
   private static final Metadata.Key<String> TRACE_ID_HEADER =
       Metadata.Key.of(MdcManager.TRACE_ID_HEADER_KEY, Metadata.ASCII_STRING_MARSHALLER);
 
-  private final MdcManager mdcManager;
+  private final UuidFactory uuidFactory;
 
-  public TraceGrpcInterceptor(MdcManager mdcManager) {
-    this.mdcManager = mdcManager;
+  public TraceGrpcInterceptor(UuidFactory uuidFactory) {
+    this.uuidFactory = uuidFactory;
   }
 
   @Override
   public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
       ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-    mdcManager.initializeTraceId();
+    final UUID traceId = uuidFactory.generate();
+    MdcManager.setTraceId(traceId);
     final var tracedCall =
         new ForwardingServerCall.SimpleForwardingServerCall<>(call) {
           @Override
           public void sendHeaders(Metadata responseHeaders) {
-            responseHeaders.put(TRACE_ID_HEADER, mdcManager.getTraceId().toString());
+            final String traceId = MdcManager.getTraceId();
+            responseHeaders.put(TRACE_ID_HEADER, traceId);
             super.sendHeaders(responseHeaders);
           }
         };
@@ -41,7 +44,7 @@ public class TraceGrpcInterceptor implements ServerInterceptor {
         try {
           super.onCancel();
         } finally {
-          mdcManager.removeTraceId();
+          MdcManager.removeTraceId();
         }
       }
 
@@ -50,7 +53,7 @@ public class TraceGrpcInterceptor implements ServerInterceptor {
         try {
           super.onComplete();
         } finally {
-          mdcManager.removeTraceId();
+          MdcManager.removeTraceId();
         }
       }
     };

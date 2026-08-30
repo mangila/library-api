@@ -5,10 +5,7 @@ import com.github.mangila.library.shared.JsonMapper;
 import com.github.mangila.library.shared.UuidFactory;
 import com.github.mangila.library.staging.StagingEntity;
 import jakarta.enterprise.context.ApplicationScoped;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @ApplicationScoped
 public class AuthorFactory {
@@ -44,7 +41,7 @@ public class AuthorFactory {
         author.death_date(),
         author.wikipedia(),
         links,
-        author.books(),
-        author.works());
+        Collections.emptyList(),
+        Collections.emptyList());
   }
 }
