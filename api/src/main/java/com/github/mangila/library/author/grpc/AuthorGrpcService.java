@@ -13,19 +13,19 @@ import org.hibernate.validator.constraints.UUID;
 public class AuthorGrpcService {
 
   private final UuidFactory uuidFactory;
-  private final AuthorService autorService;
+  private final AuthorService authorService;
   private final AuthorMapper authorMapper;
 
   public AuthorGrpcService(
-      UuidFactory uuidFactory, AuthorService autorService, AuthorMapper authorMapper) {
+          UuidFactory uuidFactory, AuthorService authorService, AuthorMapper authorMapper) {
     this.uuidFactory = uuidFactory;
-    this.autorService = autorService;
+    this.authorService = authorService;
     this.authorMapper = authorMapper;
   }
 
   public AuthorRpcDto findById(@NotNull @UUID String id) {
     final java.util.UUID uuid = uuidFactory.parse(id);
-    return autorService
+    return authorService
         .findByIdOptional(uuid)
         .map(authorMapper::toRpcDto)
         .orElseThrow(() -> GrpcProblemUtil.notFound("Author not found with id: %s".formatted(id)));
