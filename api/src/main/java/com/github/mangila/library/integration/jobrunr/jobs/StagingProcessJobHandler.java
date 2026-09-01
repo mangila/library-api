@@ -11,6 +11,7 @@ import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Gatherers;
@@ -82,22 +83,35 @@ public class StagingProcessJobHandler implements JobRequestHandler<StagingProces
                   QuarkusTransaction.requiringNew()
                       .run(
                           () -> {
-                            final List<?> entities =
-                                batch.stream()
-                                    .map(
-                                        stagingEntity ->
-                                            stagingRouter.createNew(
-                                                stagingEntity, libraryType, clazz))
-                                    .toList();
-                            stagingRouter.saveAll(entities, libraryType);
+                            final List<Object> objects = new ArrayList<>(batch.size());
+                            for (final StagingEntity stagingEntity : batch) {
+                              try {
+                                final var domain =
+                                    stagingRouter.createNew(stagingEntity, libraryType, clazz);
+                                objects.add(domain);
+                              } catch (Exception e) {
+                                jobContext.saveMetadata(
+                                    BATCH_COUNT_METADATA_KEY, currentBatchCount);
+                                jobContext.saveMetadata(ROW_COUNT_METADATA_KEY, currentRowCount);
+                                jobContext.saveMetadata(
+                                    ERROR_COUNT_METADATA_KEY, errorCount.incrementAndGet());
+                                jobContext
+                                    .logger()
+                                    .error(
+                                        "ERR: %s - %s"
+                                            .formatted(stagingEntity.getKey(), e.getMessage()));
+                              }
+                            }
+                            stagingRouter.saveAll(objects, libraryType);
                             stagingDataService.updateProcessed(batch);
                           });
-                  Panache.getEntityManager().clear();
                 } catch (Exception e) {
                   jobContext.saveMetadata(BATCH_COUNT_METADATA_KEY, currentBatchCount);
                   jobContext.saveMetadata(ROW_COUNT_METADATA_KEY, currentRowCount);
                   jobContext.saveMetadata(ERROR_COUNT_METADATA_KEY, errorCount.incrementAndGet());
                   jobContext.logger().error("ERR: %s".formatted(e.getMessage()));
+                } finally {
+                  Panache.getEntityManager().clear();
                 }
               });
       QuarkusTransaction.commit();

@@ -1,6 +1,10 @@
 package com.github.mangila.library.author.domain;
 
-import java.util.List;
+import com.github.mangila.library.shared.StringCollection;
+import com.github.mangila.library.shared.UriCollection;
+import io.github.mangila.ensure4j.Ensure;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public record Author(
@@ -8,13 +12,22 @@ public record Author(
     String openLibraryKey,
     String name,
     String personalName,
-    List<String> alternateNames,
-    List<String> uris,
+    StringCollection alternateNames,
+    UriCollection uris,
     String bio,
     String location,
     String birthDate,
     String deathDate,
     String wikipedia,
-    List<String> links,
-    List<String> books,
-    List<String> works) {}
+    UriCollection links,
+    StringCollection books,
+    StringCollection works,
+    Map<String, Object> originalJson) {
+
+  public Author {
+    Ensure.notNull(id, "author id must not be null");
+    Ensure.notBlank(openLibraryKey, "openlibrary key must not be blank");
+    name = Objects.requireNonNullElse(name, "unspecified");
+    personalName = Objects.requireNonNullElse(personalName, "unspecified");
+  }
+}

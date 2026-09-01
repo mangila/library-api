@@ -2,6 +2,8 @@ package com.github.mangila.library.author.domain;
 
 import com.github.mangila.library.integration.openlibrary.model.OpenLibraryAuthor;
 import com.github.mangila.library.shared.JsonMapper;
+import com.github.mangila.library.shared.StringCollection;
+import com.github.mangila.library.shared.UriCollection;
 import com.github.mangila.library.shared.UuidFactory;
 import com.github.mangila.library.staging.StagingEntity;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,25 +25,33 @@ public class AuthorFactory {
     final String openLibraryKey = stagingEntity.getKey();
     final Map<String, Object> json = stagingEntity.getJson();
     final OpenLibraryAuthor author = jsonMapper.toObject(json, OpenLibraryAuthor.class);
-    final List<OpenLibraryAuthor.OpenLibraryLink> openLibraryLinks = author.links();
-    final List<String> links = new ArrayList<>();
-    if (openLibraryLinks != null) {
-      links.addAll(openLibraryLinks.stream().map(OpenLibraryAuthor.OpenLibraryLink::url).toList());
-    }
+    final StringCollection alternateNames = new StringCollection(author.alternateNames());
+    final UriCollection uris = UriCollection.from(author.uris());
+    final UriCollection links = extractLinks(author.links());
     return new Author(
         id,
         openLibraryKey,
         author.name(),
-        author.personal_name(),
-        author.alternate_names(),
-        author.uris(),
+        author.personalName(),
+        alternateNames,
+        uris,
         author.getBioText(),
         author.location(),
-        author.birth_date(),
-        author.death_date(),
+        author.birthDate(),
+        author.deathDate(),
         author.wikipedia(),
         links,
-        Collections.emptyList(),
-        Collections.emptyList());
+        StringCollection.EMPTY,
+        StringCollection.EMPTY,
+        json);
+  }
+
+  private UriCollection extractLinks(List<OpenLibraryAuthor.OpenLibraryLink> openLibraryLinks) {
+    if (openLibraryLinks == null) {
+      return UriCollection.EMPTY;
+    }
+    final List<String> l =
+        openLibraryLinks.stream().map(OpenLibraryAuthor.OpenLibraryLink::url).toList();
+    return UriCollection.from(l);
   }
 }

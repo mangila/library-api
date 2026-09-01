@@ -5,34 +5,35 @@ import com.github.mangila.library.author.domain.Author;
 import com.github.mangila.library.author.graphql.AuthorGraphqlDto;
 import com.github.mangila.library.author.grpc.generated.AuthorRpcDto;
 import com.github.mangila.library.author.rest.AuthorRestDto;
+import com.github.mangila.library.shared.StringCollection;
+import com.github.mangila.library.shared.UriCollection;
 import jakarta.enterprise.context.ApplicationScoped;
-import java.util.function.Consumer;
 
 @ApplicationScoped
 public class AuthorMapper {
 
-  private static <T> void applyIfNotNull(T value, Consumer<T> action) {
-    if (value != null) {
-      action.accept(value);
-    }
-  }
-
   public Author toDomain(AuthorEntity authorEntity) {
+    final StringCollection alternateNames = new StringCollection(authorEntity.getAlternateNames());
+    final UriCollection uris = UriCollection.from(authorEntity.getUris());
+    final UriCollection links = UriCollection.from(authorEntity.getLinks());
+    final StringCollection books = new StringCollection(authorEntity.getBooks());
+    final StringCollection works = new StringCollection(authorEntity.getWorks());
     return new Author(
         authorEntity.getId(),
         authorEntity.getOpenLibraryKey(),
         authorEntity.getName(),
         authorEntity.getPersonalName(),
-        authorEntity.getAlternateNames(),
-        authorEntity.getUris(),
+        alternateNames,
+        uris,
         authorEntity.getBio(),
         authorEntity.getLocation(),
         authorEntity.getBirthDate(),
         authorEntity.getDeathDate(),
         authorEntity.getWikipedia(),
-        authorEntity.getLinks(),
-        authorEntity.getBooks(),
-        authorEntity.getWorks());
+        links,
+        books,
+        works,
+        authorEntity.getOpenLibraryJson());
   }
 
   public AuthorEntity toEntity(Author author) {
@@ -41,16 +42,17 @@ public class AuthorMapper {
     entity.setOpenLibraryKey(author.openLibraryKey());
     entity.setName(author.name());
     entity.setPersonalName(author.personalName());
-    applyIfNotNull(author.alternateNames(), entity.getAlternateNames()::addAll);
-    applyIfNotNull(author.uris(), entity.getUris()::addAll);
+    entity.setAlternateNames(author.alternateNames().value());
+    entity.setUris(author.uris().asStringList());
     entity.setBio(author.bio());
     entity.setLocation(author.location());
     entity.setBirthDate(author.birthDate());
     entity.setDeathDate(author.deathDate());
     entity.setWikipedia(author.wikipedia());
-    applyIfNotNull(author.links(), entity.getLinks()::addAll);
-    applyIfNotNull(author.books(), entity.getBooks()::addAll);
-    applyIfNotNull(author.works(), entity.getWorks()::addAll);
+    entity.setLinks(author.links().asStringList());
+    entity.setBooks(author.books().value());
+    entity.setWorks(author.works().value());
+    entity.setOpenLibraryJson(author.originalJson());
     return entity;
   }
 
@@ -60,37 +62,50 @@ public class AuthorMapper {
         author.openLibraryKey(),
         author.name(),
         author.personalName(),
-        author.alternateNames(),
-        author.uris(),
+        author.alternateNames().value(),
+        author.uris().asStringList(),
         author.bio(),
         author.location(),
         author.birthDate(),
         author.deathDate(),
         author.wikipedia(),
-        author.links(),
-        author.books(),
-        author.works());
+        author.links().asStringList(),
+        author.books().value(),
+        author.works().value());
   }
 
   public AuthorRpcDto toRpcDto(Author author) {
-    if (author == null) {
-      return AuthorRpcDto.getDefaultInstance();
+    final String bio = author.bio();
+    final String location = author.location();
+    final String birthDate = author.birthDate();
+    final String deathDate = author.deathDate();
+    final String wikipedia = author.wikipedia();
+    final AuthorRpcDto.Builder builder =
+        AuthorRpcDto.newBuilder()
+            .setId(author.id().toString())
+            .setOpenLibraryKey(author.openLibraryKey())
+            .setName(author.name())
+            .setPersonalName(author.personalName())
+            .addAllAlternateNames(author.alternateNames().value())
+            .addAllUris(author.uris().asStringList())
+            .addAllLinks(author.links().asStringList())
+            .addAllBooks(author.books().value())
+            .addAllWorks(author.works().value());
+    if (bio != null) {
+      builder.setBio(bio);
     }
-    final AuthorRpcDto.Builder builder = AuthorRpcDto.newBuilder();
-    applyIfNotNull(author.id(), id -> builder.setId(id.toString()));
-    applyIfNotNull(author.openLibraryKey(), builder::setOpenLibraryKey);
-    applyIfNotNull(author.name(), builder::setName);
-    applyIfNotNull(author.personalName(), builder::setPersonalName);
-    applyIfNotNull(author.alternateNames(), builder::addAllAlternateNames);
-    applyIfNotNull(author.uris(), builder::addAllUris);
-    applyIfNotNull(author.bio(), builder::setBio);
-    applyIfNotNull(author.location(), builder::setLocation);
-    applyIfNotNull(author.birthDate(), builder::setBirthDate);
-    applyIfNotNull(author.deathDate(), builder::setDeathDate);
-    applyIfNotNull(author.wikipedia(), builder::setWikipedia);
-    applyIfNotNull(author.links(), builder::addAllLinks);
-    applyIfNotNull(author.books(), builder::addAllBooks);
-    applyIfNotNull(author.works(), builder::addAllWorks);
+    if (location != null) {
+      builder.setLocation(location);
+    }
+    if (birthDate != null) {
+      builder.setBirthDate(birthDate);
+    }
+    if (deathDate != null) {
+      builder.setDeathDate(deathDate);
+    }
+    if (wikipedia != null) {
+      builder.setWikipedia(wikipedia);
+    }
     return builder.build();
   }
 
@@ -100,15 +115,15 @@ public class AuthorMapper {
         author.openLibraryKey(),
         author.name(),
         author.personalName(),
-        author.alternateNames(),
-        author.uris(),
+        author.alternateNames().value(),
+        author.uris().asStringList(),
         author.bio(),
         author.location(),
         author.birthDate(),
         author.deathDate(),
         author.wikipedia(),
-        author.links(),
-        author.books(),
-        author.works());
+        author.links().asStringList(),
+        author.books().value(),
+        author.works().value());
   }
 }

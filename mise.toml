@@ -12,10 +12,10 @@ description = "Format pom.xml and Java code"
 dir = "./api"
 run = "mvn spotless:apply"
 
-[tasks.spotbugs]
-description = "Spotbugs api"
+[tasks.compile]
+description = "Compile"
 dir = "./api"
-run = "mvn spotbugs:check"
+run = "mise format && mvn clean test-compile"
 
 [tasks.test]
 description = "Test api"

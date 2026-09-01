@@ -21,11 +21,11 @@ message AuthorRpcDto {
   string personal_name = 4;
   repeated string alternate_names = 5;
   repeated string uris = 6;
-  string bio = 7;
-  string location = 8;
-  string birth_date = 9;
-  string death_date = 10;
-  string wikipedia = 11;
+  optional string bio = 7;
+  optional string location = 8;
+  optional string birth_date = 9;
+  optional string death_date = 10;
+  optional string wikipedia = 11;
   repeated string links = 12;
   repeated string books = 13;
   repeated string works = 14;

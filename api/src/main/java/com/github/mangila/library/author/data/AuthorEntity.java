@@ -2,9 +2,7 @@ package com.github.mangila.library.author.data;
 
 import jakarta.persistence.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -21,15 +19,15 @@ public class AuthorEntity {
   @Column(name = "name")
   private String name;
 
-  @Column(name = "personal_name")
+  @Column(name = "personalName")
   private String personalName;
 
-  @Column(name = "alternate_names")
-  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "alternateNames")
+  @JdbcTypeCode(SqlTypes.JSON_ARRAY)
   private List<String> alternateNames = new ArrayList<>();
 
   @Column(name = "uris")
-  @JdbcTypeCode(SqlTypes.JSON)
+  @JdbcTypeCode(SqlTypes.JSON_ARRAY)
   private List<String> uris = new ArrayList<>();
 
   @Column(name = "bio")
@@ -38,26 +36,30 @@ public class AuthorEntity {
   @Column(name = "location")
   private String location;
 
-  @Column(name = "birth_date")
+  @Column(name = "birthDate")
   private String birthDate;
 
-  @Column(name = "death_date")
+  @Column(name = "deathDate")
   private String deathDate;
 
   @Column(name = "wikipedia")
   private String wikipedia;
 
   @Column(name = "links")
-  @JdbcTypeCode(SqlTypes.JSON)
+  @JdbcTypeCode(SqlTypes.JSON_ARRAY)
   private List<String> links = new ArrayList<>();
 
   @Column(name = "books")
-  @JdbcTypeCode(SqlTypes.JSON)
+  @JdbcTypeCode(SqlTypes.JSON_ARRAY)
   private List<String> books = new ArrayList<>();
 
   @Column(name = "works")
-  @JdbcTypeCode(SqlTypes.JSON)
+  @JdbcTypeCode(SqlTypes.JSON_ARRAY)
   private List<String> works = new ArrayList<>();
+
+  @Column(name = "open_library_json")
+  @JdbcTypeCode(SqlTypes.JSON)
+  private Map<String, Object> openLibraryJson = new HashMap<>();
 
   @Column(name = "created_at")
   @CreationTimestamp
@@ -105,6 +107,10 @@ public class AuthorEntity {
 
   public String getName() {
     return name;
+  }
+
+  public Map<String, Object> getOpenLibraryJson() {
+    return openLibraryJson;
   }
 
   public String getOpenLibraryKey() {
@@ -165,6 +171,10 @@ public class AuthorEntity {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setOpenLibraryJson(Map<String, Object> originalJson) {
+    this.openLibraryJson = originalJson;
   }
 
   public void setOpenLibraryKey(String openLibraryKey) {
