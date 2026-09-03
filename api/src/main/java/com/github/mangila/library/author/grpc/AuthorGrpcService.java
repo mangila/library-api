@@ -17,7 +17,7 @@ public class AuthorGrpcService {
   private final AuthorMapper authorMapper;
 
   public AuthorGrpcService(
-          UuidFactory uuidFactory, AuthorService authorService, AuthorMapper authorMapper) {
+      UuidFactory uuidFactory, AuthorService authorService, AuthorMapper authorMapper) {
     this.uuidFactory = uuidFactory;
     this.authorService = authorService;
     this.authorMapper = authorMapper;

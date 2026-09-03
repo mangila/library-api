@@ -19,10 +19,10 @@ public class AuthorEntity {
   @Column(name = "name")
   private String name;
 
-  @Column(name = "personalName")
+  @Column(name = "personal_name")
   private String personalName;
 
-  @Column(name = "alternateNames")
+  @Column(name = "alternate_names")
   @JdbcTypeCode(SqlTypes.JSON_ARRAY)
   private List<String> alternateNames = new ArrayList<>();
 
@@ -36,10 +36,10 @@ public class AuthorEntity {
   @Column(name = "location")
   private String location;
 
-  @Column(name = "birthDate")
+  @Column(name = "birth_date")
   private String birthDate;
 
-  @Column(name = "deathDate")
+  @Column(name = "death_date")
   private String deathDate;
 
   @Column(name = "wikipedia")

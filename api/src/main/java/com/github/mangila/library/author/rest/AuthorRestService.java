@@ -27,7 +27,6 @@ public class AuthorRestService {
     return authorService
         .findByIdOptional(uuid)
         .map(authorMapper::toWebDto)
-        .orElseThrow(
-            () -> HttpProblemException.notFound("Author not found with id: %s".formatted(id)));
+        .orElseThrow(() -> HttpProblemException.notFound(id));
   }
 }

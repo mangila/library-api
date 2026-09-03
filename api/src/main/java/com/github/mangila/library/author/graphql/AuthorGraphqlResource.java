@@ -7,12 +7,12 @@ import org.eclipse.microprofile.graphql.Query;
 import org.hibernate.validator.constraints.UUID;
 
 @GraphQLApi
-public class AuthorGraphQLResource {
+public class AuthorGraphqlResource {
 
-  private final AuthorGraphQlService authorGraphQlService;
+  private final AuthorGraphqlService authorGraphQlService;
 
   @Inject
-  public AuthorGraphQLResource(AuthorGraphQlService authorGraphQlService) {
+  public AuthorGraphqlResource(AuthorGraphqlService authorGraphQlService) {
     this.authorGraphQlService = authorGraphQlService;
   }
 
