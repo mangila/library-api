@@ -125,9 +125,8 @@ public class FileDownloadJobHandler implements JobRequestHandler<FileDownloadJob
             StandardCopyOption.ATOMIC_MOVE,
             StandardCopyOption.REPLACE_EXISTING);
       }
-    } finally {
-      Files.deleteIfExists(tempPath);
     }
+    Files.deleteIfExists(tempPath);
     jobContext.logger().info("File download complete: %s".formatted(filePath.value()));
   }
 
