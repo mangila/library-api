@@ -1,6 +1,7 @@
 package com.github.mangila.library.integration.openlibrary.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 
@@ -9,21 +10,21 @@ public record OpenLibraryWork(
     String title,
     String subtitle,
     List<OpenLibraryAuthorRole> authors,
-    List<OpenLibraryTranslatedString> translated_titles,
+    @JsonProperty("translated_titles") List<OpenLibraryTranslatedString> translatedTitles,
     List<String> subjects,
-    List<String> subject_places,
-    List<String> subject_times,
-    List<String> subject_people,
+    @JsonProperty("subject_places") List<String> subjectPlaces,
+    @JsonProperty("subject_times") List<String> subjectTimes,
+    @JsonProperty("subject_people") List<String> subjectPeople,
     JsonNode description,
-    List<String> dewey_number,
-    List<String> lc_classifications,
-    JsonNode first_sentence,
-    List<OpenLibraryLanguage> original_languages,
-    List<String> other_titles,
-    String first_publish_date,
+    @JsonProperty("dewey_number") List<String> deweyNumber,
+    @JsonProperty("lc_classifications") List<String> lcClassifications,
+    @JsonProperty("first_sentence") JsonNode firstSentence,
+    @JsonProperty("original_languages") List<OpenLibraryLanguage> originalLanguages,
+    @JsonProperty("other_titles") List<String> otherTitles,
+    @JsonProperty("first_publish_date") String firstPublishDate,
     List<OpenLibraryLink> links,
     JsonNode notes,
-    OpenLibraryEdition cover_edition,
+    @JsonProperty("cover_edition") OpenLibraryEdition coverEdition,
     List<Integer> covers) {
 
   @JsonIgnoreProperties(ignoreUnknown = true)

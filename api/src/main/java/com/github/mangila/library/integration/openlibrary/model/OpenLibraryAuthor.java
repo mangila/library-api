@@ -8,7 +8,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record OpenLibraryAuthor(
     String name,
-    boolean eastern_order,
+    @JsonProperty("eastern_order") boolean easternOrder,
     @JsonProperty("personal_name") String personalName,
     String enumeration,
     String title,
