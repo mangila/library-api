@@ -1,4 +1,4 @@
-package com.github.mangila.library.author.rest;
+package com.github.mangila.library.author.mcp;
 
 import com.github.mangila.library.author.domain.AuthorService;
 import com.github.mangila.library.author.shared.AuthorMapper;
@@ -8,24 +8,24 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.UUID;
 
 @ApplicationScoped
-public class AuthorRestService {
+public class AuthorMcpService {
 
-  private final AuthorMapper authorMapper;
   private final AuthorService authorService;
+  private final AuthorMapper authorMapper;
   private final UuidFactory uuidFactory;
 
-  public AuthorRestService(
+  public AuthorMcpService(
       AuthorService authorService, AuthorMapper authorMapper, UuidFactory uuidFactory) {
     this.authorService = authorService;
     this.authorMapper = authorMapper;
     this.uuidFactory = uuidFactory;
   }
 
-  public AuthorRestDto findById(String id) {
+  public AuthorMcpDto findById(String id) {
     final UUID uuid = uuidFactory.parse(id);
     return authorService
         .findByIdOptional(uuid)
-        .map(authorMapper::toWebDto)
+        .map(authorMapper::toMcpDto)
         .orElseThrow(() -> HttpProblemException.notFound(id));
   }
 }

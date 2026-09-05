@@ -68,7 +68,7 @@ public class FileDownloadJobHandler implements JobRequestHandler<FileDownloadJob
               }
             });
     final JobDashboardProgressBar jobDashboardProgressBar = jobContext.progressBar(contentLength);
-    Instant startExecution = Instant.now();
+    final Instant startExecution = Instant.now();
     Consumer<Long> progressCallback =
         transferred -> {
           jobDashboardProgressBar.setProgress(transferred);

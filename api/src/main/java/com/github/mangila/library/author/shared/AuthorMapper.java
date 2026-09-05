@@ -4,6 +4,7 @@ import com.github.mangila.library.author.data.AuthorEntity;
 import com.github.mangila.library.author.domain.Author;
 import com.github.mangila.library.author.graphql.AuthorGraphqlDto;
 import com.github.mangila.library.author.grpc.generated.AuthorRpcDto;
+import com.github.mangila.library.author.mcp.AuthorMcpDto;
 import com.github.mangila.library.author.rest.AuthorRestDto;
 import com.github.mangila.library.shared.StringCollection;
 import com.github.mangila.library.shared.UriCollection;
@@ -72,6 +73,10 @@ public class AuthorMapper {
         author.links().asStringList(),
         author.books().value(),
         author.works().value());
+  }
+
+  public AuthorMcpDto toMcpDto(Author author) {
+    return new AuthorMcpDto(author.id().toString(), author.openLibraryKey());
   }
 
   public AuthorRpcDto toRpcDto(Author author) {
