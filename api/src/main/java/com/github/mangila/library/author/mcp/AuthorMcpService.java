@@ -2,8 +2,8 @@ package com.github.mangila.library.author.mcp;
 
 import com.github.mangila.library.author.domain.AuthorService;
 import com.github.mangila.library.author.shared.AuthorMapper;
-import com.github.mangila.library.shared.HttpProblemException;
 import com.github.mangila.library.shared.UuidFactory;
+import io.quarkiverse.mcp.server.ToolCallException;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.UUID;
 
@@ -22,10 +22,13 @@ public class AuthorMcpService {
   }
 
   public AuthorMcpDto findById(String id) {
+    if (!uuidFactory.isUuid(id)) {
+      throw new ToolCallException("Not valid UUID: " + id);
+    }
     final UUID uuid = uuidFactory.parse(id);
     return authorService
         .findByIdOptional(uuid)
         .map(authorMapper::toMcpDto)
-        .orElseThrow(() -> HttpProblemException.notFound(id));
+        .orElseThrow(() -> new ToolCallException("Author not found: " + id));
   }
 }
